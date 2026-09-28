@@ -1,40 +1,33 @@
 package ru.mipt.bit.platformer.model;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Rectangle;
-
-import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
-import static ru.mipt.bit.platformer.util.GdxGameUtils.drawTextureRegionUnscaled;
-import static ru.mipt.bit.platformer.util.GdxGameUtils.moveRectangleAtTileCenter;
 
 public class GameObject {
 
-    protected final Texture texture;
-    protected final TextureRegion graphics;
-    protected final Rectangle rectangle;
     protected final GridPoint2 coordinates;
 
-    public GameObject(String texturePath, GridPoint2 coordinates, TiledMapTileLayer groundLayer) {
-        this.texture = new Texture(texturePath);
-        this.graphics = new TextureRegion(texture);
-        this.rectangle = createBoundingRectangle(graphics);
+    public GameObject(GridPoint2 coordinates) {
         this.coordinates = new GridPoint2(coordinates);
-        moveRectangleAtTileCenter(groundLayer, rectangle, coordinates);
-    }
-
-    public void render(Batch batch) {
-        drawTextureRegionUnscaled(batch, graphics, rectangle, 0f);
-    }
-
-    public void dispose() {
-        texture.dispose();
     }
 
     public GridPoint2 getCoordinates() {
         return coordinates;
+    }
+
+    /**
+     * Rendering contract: the object occupies the segment between its source and
+     * destination tiles, advanced by the movement progress. Static objects stand
+     * exactly at their tile.
+     */
+    public GridPoint2 getDestinationCoordinates() {
+        return coordinates;
+    }
+
+    public float getMovementProgress() {
+        return 1f;
+    }
+
+    public float getRotation() {
+        return 0f;
     }
 }
