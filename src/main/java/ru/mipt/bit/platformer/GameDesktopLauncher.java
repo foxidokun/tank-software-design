@@ -2,6 +2,7 @@ package ru.mipt.bit.platformer;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -13,6 +14,8 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
 import ru.mipt.bit.platformer.graphics.EntityRenderer;
+import ru.mipt.bit.platformer.input.InputHandler;
+import ru.mipt.bit.platformer.input.MoveButtonHandler;
 import ru.mipt.bit.platformer.model.Direction;
 import ru.mipt.bit.platformer.model.GameObject;
 import ru.mipt.bit.platformer.model.MovableEntity;
@@ -20,6 +23,7 @@ import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRenderer;
@@ -39,6 +43,8 @@ public class GameDesktopLauncher implements ApplicationListener {
     private EntityRenderer playerRenderer;
     private final Map<GameObject, EntityRenderer> obstacleRenderers = new HashMap<>();
 
+    private InputHandler inputHandler;
+
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -54,6 +60,13 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         GameObject tree = new GameObject(new GridPoint2(1, 3));
         obstacleRenderers.put(tree, new EntityRenderer("images/greenTree.png", tree, tileMovement));
+
+        Set<GameObject> obstacles = obstacleRenderers.keySet();
+        inputHandler = new InputHandler();
+        inputHandler.add(new MoveButtonHandler(Direction.UP, player, obstacles, Keys.UP, Keys.W));
+        inputHandler.add(new MoveButtonHandler(Direction.LEFT, player, obstacles, Keys.LEFT, Keys.A));
+        inputHandler.add(new MoveButtonHandler(Direction.DOWN, player, obstacles, Keys.DOWN, Keys.S));
+        inputHandler.add(new MoveButtonHandler(Direction.RIGHT, player, obstacles, Keys.RIGHT, Keys.D));
     }
 
     @Override
@@ -65,11 +78,8 @@ public class GameDesktopLauncher implements ApplicationListener {
         // get time passed since the last render
         float deltaTime = Gdx.graphics.getDeltaTime();
 
-        for (Direction dir : Direction.values()) {
-            if (dir.isKeyPressed()) {
-                player.tryMove(dir, obstacleRenderers.keySet());
-            }
-        }
+        // react to pressed buttons
+        inputHandler.handle();
 
         // update player model state
         player.update(deltaTime, MOVEMENT_SPEED);
