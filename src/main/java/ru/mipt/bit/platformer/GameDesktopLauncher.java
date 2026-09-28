@@ -2,6 +2,7 @@ package ru.mipt.bit.platformer;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -12,13 +13,17 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
+import ru.mipt.bit.platformer.graphics.EntityRenderer;
+import ru.mipt.bit.platformer.input.InputHandler;
+import ru.mipt.bit.platformer.input.MoveButtonHandler;
 import ru.mipt.bit.platformer.model.Direction;
 import ru.mipt.bit.platformer.model.GameObject;
 import ru.mipt.bit.platformer.model.MovableEntity;
 import ru.mipt.bit.platformer.util.TileMovement;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRenderer;
@@ -35,7 +40,10 @@ public class GameDesktopLauncher implements ApplicationListener {
     private TileMovement tileMovement;
 
     private MovableEntity player;
-    private List<GameObject> obstacles;
+    private EntityRenderer playerRenderer;
+    private final Map<GameObject, EntityRenderer> obstacleRenderers = new HashMap<>();
+
+    private InputHandler inputHandler;
 
     @Override
     public void create() {
@@ -47,10 +55,18 @@ public class GameDesktopLauncher implements ApplicationListener {
         TiledMapTileLayer groundLayer = getSingleLayer(level);
         tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
 
-        player = new MovableEntity("images/tank_blue.png", new GridPoint2(1, 1), groundLayer);
-        obstacles = Arrays.asList(
-                new GameObject("images/greenTree.png", new GridPoint2(1, 3), groundLayer)
-        );
+        player = new MovableEntity(new GridPoint2(1, 1));
+        playerRenderer = new EntityRenderer("images/tank_blue.png", player, tileMovement);
+
+        GameObject tree = new GameObject(new GridPoint2(1, 3));
+        obstacleRenderers.put(tree, new EntityRenderer("images/greenTree.png", tree, tileMovement));
+
+        Set<GameObject> obstacles = obstacleRenderers.keySet();
+        inputHandler = new InputHandler();
+        inputHandler.add(new MoveButtonHandler(Direction.UP, player, obstacles, Keys.UP, Keys.W));
+        inputHandler.add(new MoveButtonHandler(Direction.LEFT, player, obstacles, Keys.LEFT, Keys.A));
+        inputHandler.add(new MoveButtonHandler(Direction.DOWN, player, obstacles, Keys.DOWN, Keys.S));
+        inputHandler.add(new MoveButtonHandler(Direction.RIGHT, player, obstacles, Keys.RIGHT, Keys.D));
     }
 
     @Override
@@ -62,14 +78,11 @@ public class GameDesktopLauncher implements ApplicationListener {
         // get time passed since the last render
         float deltaTime = Gdx.graphics.getDeltaTime();
 
-        for (Direction dir : Direction.values()) {
-            if (dir.isKeyPressed()) {
-                player.tryMove(dir, obstacles);
-            }
-        }
+        // react to pressed buttons
+        inputHandler.handle();
 
-        // calculate interpolated player screen coordinates
-        player.update(deltaTime, MOVEMENT_SPEED, tileMovement);
+        // update player model state
+        player.update(deltaTime, MOVEMENT_SPEED);
 
         // render each tile of the level
         levelRenderer.render();
@@ -78,11 +91,11 @@ public class GameDesktopLauncher implements ApplicationListener {
         batch.begin();
 
         // render player
-        player.render(batch);
+        playerRenderer.render(batch);
 
         // render obstacles
-        for (GameObject obstacle : obstacles) {
-            obstacle.render(batch);
+        for (EntityRenderer renderer : obstacleRenderers.values()) {
+            renderer.render(batch);
         }
 
         // submit all drawing requests
@@ -107,9 +120,9 @@ public class GameDesktopLauncher implements ApplicationListener {
     @Override
     public void dispose() {
         // dispose of all the native resources (classes which implement com.badlogic.gdx.utils.Disposable)
-        player.dispose();
-        for (GameObject obstacle : obstacles) {
-            obstacle.dispose();
+        playerRenderer.dispose();
+        for (EntityRenderer renderer : obstacleRenderers.values()) {
+            renderer.dispose();
         }
         level.dispose();
         batch.dispose();
