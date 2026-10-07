@@ -2,7 +2,6 @@ package ru.mipt.bit.platformer;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -11,19 +10,20 @@ import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Interpolation;
+import ru.mipt.bit.platformer.config.GameConfig;
+import ru.mipt.bit.platformer.config.ObstacleSpec;
 import ru.mipt.bit.platformer.graphics.EntityRenderer;
+import ru.mipt.bit.platformer.input.GdxKeyStateProvider;
 import ru.mipt.bit.platformer.input.InputHandler;
+import ru.mipt.bit.platformer.input.KeyStateProvider;
 import ru.mipt.bit.platformer.input.MoveButtonHandler;
 import ru.mipt.bit.platformer.model.Direction;
 import ru.mipt.bit.platformer.model.GameObject;
 import ru.mipt.bit.platformer.model.MovableEntity;
 import ru.mipt.bit.platformer.util.TileMovement;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRenderer;
@@ -31,7 +31,7 @@ import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
-    private static final float MOVEMENT_SPEED = 0.4f;
+    private final GameConfig config;
 
     private Batch batch;
 
@@ -41,32 +41,42 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     private MovableEntity player;
     private EntityRenderer playerRenderer;
-    private final Map<GameObject, EntityRenderer> obstacleRenderers = new HashMap<>();
+    private final Map<GameObject, EntityRenderer> obstacleRenderers = new LinkedHashMap<>();
 
     private InputHandler inputHandler;
+
+    public GameDesktopLauncher() {
+        this(new GameConfig());
+    }
+
+    public GameDesktopLauncher(GameConfig config) {
+        this.config = config;
+    }
 
     @Override
     public void create() {
         batch = new SpriteBatch();
 
         // load level tiles
-        level = new TmxMapLoader().load("level.tmx");
+        level = new TmxMapLoader().load(config.getLevelPath());
         levelRenderer = createSingleLayerMapRenderer(level, batch);
         TiledMapTileLayer groundLayer = getSingleLayer(level);
-        tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
+        tileMovement = new TileMovement(groundLayer, config.getMovementInterpolation());
 
-        player = new MovableEntity(new GridPoint2(1, 1));
-        playerRenderer = new EntityRenderer("images/tank_blue.png", player, tileMovement);
+        KeyStateProvider keyState = new GdxKeyStateProvider();
 
-        GameObject tree = new GameObject(new GridPoint2(1, 3));
-        obstacleRenderers.put(tree, new EntityRenderer("images/greenTree.png", tree, tileMovement));
+        player = new MovableEntity(config.getPlayerCoordinates());
+        playerRenderer = new EntityRenderer(config.getPlayerTexturePath(), player, tileMovement);
 
-        Set<GameObject> obstacles = obstacleRenderers.keySet();
+        for (ObstacleSpec obstacle : config.getObstacles()) {
+            GameObject object = new GameObject(obstacle.getCoordinates());
+            obstacleRenderers.put(object, new EntityRenderer(obstacle.getTexturePath(), object, tileMovement));
+        }
+
         inputHandler = new InputHandler();
-        inputHandler.add(new MoveButtonHandler(Direction.UP, player, obstacles, Keys.UP, Keys.W));
-        inputHandler.add(new MoveButtonHandler(Direction.LEFT, player, obstacles, Keys.LEFT, Keys.A));
-        inputHandler.add(new MoveButtonHandler(Direction.DOWN, player, obstacles, Keys.DOWN, Keys.S));
-        inputHandler.add(new MoveButtonHandler(Direction.RIGHT, player, obstacles, Keys.RIGHT, Keys.D));
+        for (Map.Entry<Direction, int[]> binding : config.getKeyBindings().entrySet()) {
+            inputHandler.add(new MoveButtonHandler(binding.getKey(), player, obstacleRenderers.keySet(), keyState, binding.getValue()));
+        }
     }
 
     @Override
@@ -82,7 +92,7 @@ public class GameDesktopLauncher implements ApplicationListener {
         inputHandler.handle();
 
         // update player model state
-        player.update(deltaTime, MOVEMENT_SPEED);
+        player.update(deltaTime, config.getMovementSpeed());
 
         // render each tile of the level
         levelRenderer.render();
@@ -129,9 +139,11 @@ public class GameDesktopLauncher implements ApplicationListener {
     }
 
     public static void main(String[] args) {
-        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        GameConfig config = new GameConfig();
+
+        Lwjgl3ApplicationConfiguration appConfig = new Lwjgl3ApplicationConfiguration();
         // level width: 10 tiles x 128px, height: 8 tiles x 128px
-        config.setWindowedMode(1280, 1024);
-        new Lwjgl3Application(new GameDesktopLauncher(), config);
+        appConfig.setWindowedMode(config.getWindowWidth(), config.getWindowHeight());
+        new Lwjgl3Application(new GameDesktopLauncher(config), appConfig);
     }
 }
