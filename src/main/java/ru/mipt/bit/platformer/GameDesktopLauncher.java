@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import ru.mipt.bit.platformer.config.GameConfig;
+import ru.mipt.bit.platformer.config.Level;
 import ru.mipt.bit.platformer.config.ObstacleSpec;
 import ru.mipt.bit.platformer.graphics.EntityRenderer;
 import ru.mipt.bit.platformer.input.GdxKeyStateProvider;
@@ -63,12 +64,14 @@ public class GameDesktopLauncher implements ApplicationListener {
         TiledMapTileLayer groundLayer = getSingleLayer(level);
         tileMovement = new TileMovement(groundLayer, config.getMovementInterpolation());
 
+        Level gameLevel = config.getLevelProvider().provide();
+
         KeyStateProvider keyState = new GdxKeyStateProvider();
 
-        player = new MovableEntity(config.getPlayerCoordinates());
+        player = new MovableEntity(gameLevel.getPlayerCoordinates());
         playerRenderer = new EntityRenderer(config.getPlayerTexturePath(), player, tileMovement);
 
-        for (ObstacleSpec obstacle : config.getObstacles()) {
+        for (ObstacleSpec obstacle : gameLevel.getObstacles()) {
             GameObject object = new GameObject(obstacle.getCoordinates());
             obstacleRenderers.put(object, new EntityRenderer(obstacle.getTexturePath(), object, tileMovement));
         }

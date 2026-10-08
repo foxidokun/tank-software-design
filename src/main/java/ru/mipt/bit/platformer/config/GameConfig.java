@@ -1,13 +1,10 @@
 package ru.mipt.bit.platformer.config;
 
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
 import ru.mipt.bit.platformer.model.Direction;
 
-import java.util.Collections;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,11 +20,9 @@ public class GameConfig {
     private float movementSpeed = 0.4f;
     private Interpolation movementInterpolation = Interpolation.smooth;
 
-    private GridPoint2 playerCoordinates = new GridPoint2(1, 1);
     private String playerTexturePath = "images/tank_blue.png";
 
-    private List<ObstacleSpec> obstacles = Collections.singletonList(
-            new ObstacleSpec("images/greenTree.png", 1, 3));
+    private LevelProvider levelProvider = new FileLevelProvider("level.txt", "images/greenTree.png");
 
     private Map<Direction, int[]> keyBindings = defaultKeyBindings();
 
@@ -60,16 +55,12 @@ public class GameConfig {
         return movementInterpolation;
     }
 
-    public GridPoint2 getPlayerCoordinates() {
-        return new GridPoint2(playerCoordinates);
-    }
-
     public String getPlayerTexturePath() {
         return playerTexturePath;
     }
 
-    public List<ObstacleSpec> getObstacles() {
-        return obstacles;
+    public LevelProvider getLevelProvider() {
+        return levelProvider;
     }
 
     public Map<Direction, int[]> getKeyBindings() {
