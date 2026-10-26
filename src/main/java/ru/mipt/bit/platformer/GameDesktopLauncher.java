@@ -68,7 +68,7 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         KeyStateProvider keyState = new GdxKeyStateProvider();
 
-        player = new MovableEntity(gameLevel.getPlayerCoordinates());
+        player = new MovableEntity(gameLevel.getPlayerCoordinates(), gameLevel.getSize());
         playerRenderer = new EntityRenderer(config.getPlayerTexturePath(), player, tileMovement);
 
         for (ObstacleSpec obstacle : gameLevel.getObstacles()) {

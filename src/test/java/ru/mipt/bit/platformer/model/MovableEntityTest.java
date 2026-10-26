@@ -10,7 +10,9 @@ import static org.junit.Assert.assertEquals;
 
 public class MovableEntityTest {
 
-    private final MovableEntity player = new MovableEntity(new GridPoint2(1, 1));
+    private static final GridPoint2 FIELD_SIZE = new GridPoint2(10, 8);
+
+    private final MovableEntity player = new MovableEntity(new GridPoint2(1, 1), FIELD_SIZE);
 
     @Test
     public void tryMoveSetsDestinationToNeighbourTile() {
@@ -49,5 +51,19 @@ public class MovableEntityTest {
 
         assertEquals(1f, player.getMovementProgress(), 0f);
         assertEquals(new GridPoint2(2, 1), player.getCoordinates());
+    }
+
+    @Test
+    public void tryMoveBeyondFieldBoundsOnlyTurnsThePlayer() {
+        MovableEntity tank = new MovableEntity(new GridPoint2(0, 0), new GridPoint2(1, 1));
+
+        tank.tryMove(Direction.LEFT, Collections.emptyList());
+
+        assertEquals(new GridPoint2(0, 0), tank.getDestinationCoordinates());
+        assertEquals(-180f, tank.getRotation(), 0f);
+
+        tank.tryMove(Direction.UP, Collections.emptyList());
+
+        assertEquals(new GridPoint2(0, 0), tank.getDestinationCoordinates());
     }
 }

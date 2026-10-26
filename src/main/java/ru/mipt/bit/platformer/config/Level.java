@@ -13,10 +13,12 @@ public class Level {
 
     private final GridPoint2 playerCoordinates;
     private final List<ObstacleSpec> obstacles;
+    private final GridPoint2 size;
 
-    public Level(GridPoint2 playerCoordinates, List<ObstacleSpec> obstacles) {
+    public Level(GridPoint2 playerCoordinates, List<ObstacleSpec> obstacles, GridPoint2 size) {
         this.playerCoordinates = new GridPoint2(playerCoordinates);
         this.obstacles = Collections.unmodifiableList(new ArrayList<>(obstacles));
+        this.size = new GridPoint2(size);
     }
 
     public GridPoint2 getPlayerCoordinates() {
@@ -25,5 +27,9 @@ public class Level {
 
     public List<ObstacleSpec> getObstacles() {
         return obstacles;
+    }
+
+    public GridPoint2 getSize() {
+        return new GridPoint2(size);
     }
 }

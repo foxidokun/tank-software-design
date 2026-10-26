@@ -10,18 +10,20 @@ import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 public class MovableEntity extends GameObject {
 
     private final GridPoint2 destinationCoordinates;
+    private final GridPoint2 fieldSize;
     private float movementProgress = 1f;
     private float rotation;
 
-    public MovableEntity(GridPoint2 coordinates) {
+    public MovableEntity(GridPoint2 coordinates, GridPoint2 fieldSize) {
         super(coordinates);
         this.destinationCoordinates = new GridPoint2(coordinates);
+        this.fieldSize = new GridPoint2(fieldSize);
     }
 
     public void tryMove(Direction direction, Collection<GameObject> obstacles) {
         if (isEqual(movementProgress, 1f)) {
             GridPoint2 target = direction.move(coordinates);
-            if (noCollision(target, obstacles)) {
+            if (insideField(target) && noCollision(target, obstacles)) {
                 destinationCoordinates.set(target);
                 movementProgress = 0f;
             }
@@ -49,6 +51,10 @@ public class MovableEntity extends GameObject {
     @Override
     public float getRotation() {
         return rotation;
+    }
+
+    private boolean insideField(GridPoint2 target) {
+        return target.x >= 0 && target.x < fieldSize.x && target.y >= 0 && target.y < fieldSize.y;
     }
 
     private boolean noCollision(GridPoint2 target, Collection<GameObject> obstacles) {

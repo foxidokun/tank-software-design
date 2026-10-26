@@ -45,6 +45,6 @@ public class RandomLevelProvider implements LevelProvider {
             obstacles.add(new ObstacleSpec(treeTexturePath, cells.get(i)));
         }
 
-        return new Level(playerCoordinates, obstacles);
+        return new Level(playerCoordinates, obstacles, new GridPoint2(width, height));
     }
 }

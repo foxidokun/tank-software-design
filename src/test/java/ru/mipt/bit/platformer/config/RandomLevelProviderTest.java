@@ -31,6 +31,11 @@ public class RandomLevelProviderTest {
     }
 
     @Test
+    public void levelSizeMatchesProviderParameters() {
+        assertEquals(new GridPoint2(WIDTH, HEIGHT), provider.provide().getSize());
+    }
+
+    @Test
     public void fillsLevelWithDistinctObstaclesOutsidePlayerCell() {
         Level level = provider.provide();
 
