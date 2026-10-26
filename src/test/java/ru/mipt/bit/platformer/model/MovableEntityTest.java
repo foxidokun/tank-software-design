@@ -66,4 +66,19 @@ public class MovableEntityTest {
 
         assertEquals(new GridPoint2(0, 0), tank.getDestinationCoordinates());
     }
+
+    @Test
+    public void tankCannotMoveIntoCellsOfMovingTank() {
+        MovableEntity moving = new MovableEntity(new GridPoint2(1, 1), FIELD_SIZE);
+        moving.tryMove(Direction.UP, Collections.emptyList());
+        List<GameObject> obstacles = Collections.singletonList(moving);
+
+        MovableEntity neighbour = new MovableEntity(new GridPoint2(0, 1), FIELD_SIZE);
+        neighbour.tryMove(Direction.RIGHT, obstacles);
+        assertEquals(new GridPoint2(0, 1), neighbour.getDestinationCoordinates());
+
+        MovableEntity upperNeighbour = new MovableEntity(new GridPoint2(0, 2), FIELD_SIZE);
+        upperNeighbour.tryMove(Direction.RIGHT, obstacles);
+        assertEquals(new GridPoint2(0, 2), upperNeighbour.getDestinationCoordinates());
+    }
 }

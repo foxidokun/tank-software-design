@@ -59,7 +59,7 @@ public class MovableEntity extends GameObject {
 
     private boolean noCollision(GridPoint2 target, Collection<GameObject> obstacles) {
         for (GameObject obstacle : obstacles) {
-            if (obstacle.getCoordinates().equals(target)) {
+            if (obstacle.getCoordinates().equals(target) || obstacle.getDestinationCoordinates().equals(target)) {
                 return false;
             }
         }
