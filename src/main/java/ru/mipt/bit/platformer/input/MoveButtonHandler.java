@@ -2,6 +2,7 @@ package ru.mipt.bit.platformer.input;
 
 import ru.mipt.bit.platformer.model.Direction;
 import ru.mipt.bit.platformer.model.GameObject;
+import ru.mipt.bit.platformer.model.MoveCommand;
 import ru.mipt.bit.platformer.model.MovableEntity;
 
 import java.util.Collection;
@@ -26,7 +27,7 @@ public class MoveButtonHandler implements ButtonHandler {
     public void handle() {
         for (int keyCode : keyCodes) {
             if (keyState.isKeyPressed(keyCode)) {
-                player.tryMove(direction, obstacles);
+                new MoveCommand(player, direction, obstacles).execute();
                 return;
             }
         }
