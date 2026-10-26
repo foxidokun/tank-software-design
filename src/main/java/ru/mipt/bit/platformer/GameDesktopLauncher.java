@@ -10,9 +10,11 @@ import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.config.GameConfig;
 import ru.mipt.bit.platformer.config.Level;
 import ru.mipt.bit.platformer.config.ObstacleSpec;
+import ru.mipt.bit.platformer.config.RandomTankProvider;
 import ru.mipt.bit.platformer.graphics.EntityRenderer;
 import ru.mipt.bit.platformer.input.GdxKeyStateProvider;
 import ru.mipt.bit.platformer.input.InputHandler;
@@ -23,7 +25,9 @@ import ru.mipt.bit.platformer.model.GameObject;
 import ru.mipt.bit.platformer.model.MovableEntity;
 import ru.mipt.bit.platformer.util.TileMovement;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
@@ -43,6 +47,7 @@ public class GameDesktopLauncher implements ApplicationListener {
     private MovableEntity player;
     private EntityRenderer playerRenderer;
     private final Map<GameObject, EntityRenderer> obstacleRenderers = new LinkedHashMap<>();
+    private final Map<GameObject, EntityRenderer> tankRenderers = new LinkedHashMap<>();
 
     private InputHandler inputHandler;
 
@@ -64,7 +69,7 @@ public class GameDesktopLauncher implements ApplicationListener {
         TiledMapTileLayer groundLayer = getSingleLayer(level);
         tileMovement = new TileMovement(groundLayer, config.getMovementInterpolation());
 
-        Level gameLevel = config.getLevelProvider().provide();
+        Level gameLevel = new RandomTankProvider(config.getLevelProvider(), 5).provide();
 
         KeyStateProvider keyState = new GdxKeyStateProvider();
 
@@ -76,9 +81,16 @@ public class GameDesktopLauncher implements ApplicationListener {
             obstacleRenderers.put(object, new EntityRenderer(obstacle.getTexturePath(), object, tileMovement));
         }
 
+        List<GameObject> obstacles = new ArrayList<>(obstacleRenderers.keySet());
+        for (GridPoint2 coordinates : gameLevel.getTankCoordinates()) {
+            MovableEntity tank = new MovableEntity(coordinates, gameLevel.getSize());
+            tankRenderers.put(tank, new EntityRenderer(config.getTankTexturePath(), tank, tileMovement));
+            obstacles.add(tank);
+        }
+
         inputHandler = new InputHandler();
         for (Map.Entry<Direction, int[]> binding : config.getKeyBindings().entrySet()) {
-            inputHandler.add(new MoveButtonHandler(binding.getKey(), player, obstacleRenderers.keySet(), keyState, binding.getValue()));
+            inputHandler.add(new MoveButtonHandler(binding.getKey(), player, obstacles, keyState, binding.getValue()));
         }
     }
 
@@ -111,6 +123,11 @@ public class GameDesktopLauncher implements ApplicationListener {
             renderer.render(batch);
         }
 
+        // render tanks
+        for (EntityRenderer renderer : tankRenderers.values()) {
+            renderer.render(batch);
+        }
+
         // submit all drawing requests
         batch.end();
     }
@@ -135,6 +152,9 @@ public class GameDesktopLauncher implements ApplicationListener {
         // dispose of all the native resources (classes which implement com.badlogic.gdx.utils.Disposable)
         playerRenderer.dispose();
         for (EntityRenderer renderer : obstacleRenderers.values()) {
+            renderer.dispose();
+        }
+        for (EntityRenderer renderer : tankRenderers.values()) {
             renderer.dispose();
         }
         level.dispose();

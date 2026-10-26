@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -69,7 +70,7 @@ public class FileLevelProvider implements LevelProvider {
         if (playerCoordinates == null) {
             throw new IllegalArgumentException("Level must contain X with the player start position");
         }
-        return new Level(playerCoordinates, obstacles, new GridPoint2(width, lines.size()));
+        return new Level(playerCoordinates, Collections.emptyList(), obstacles, new GridPoint2(width, lines.size()));
     }
 
     private List<String> readLines() {

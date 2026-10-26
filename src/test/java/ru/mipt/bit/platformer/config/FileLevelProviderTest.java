@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FileLevelProviderTest {
 
@@ -18,6 +19,7 @@ public class FileLevelProviderTest {
 
         assertEquals(new GridPoint2(1, 0), level.getPlayerCoordinates());
         assertEquals(new GridPoint2(3, 2), level.getSize());
+        assertTrue(level.getTankCoordinates().isEmpty());
         assertEquals(1, level.getObstacles().size());
         assertEquals(new GridPoint2(0, 1), level.getObstacles().get(0).getCoordinates());
         assertEquals("images/greenTree.png", level.getObstacles().get(0).getTexturePath());

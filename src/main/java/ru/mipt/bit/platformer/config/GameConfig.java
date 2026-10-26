@@ -21,6 +21,7 @@ public class GameConfig {
     private Interpolation movementInterpolation = Interpolation.smooth;
 
     private String playerTexturePath = "images/tank_blue.png";
+    private String tankTexturePath = "images/tank_blue.png";
 
     private LevelProvider levelProvider = new FileLevelProvider("level.txt", "images/greenTree.png");
 
@@ -57,6 +58,10 @@ public class GameConfig {
 
     public String getPlayerTexturePath() {
         return playerTexturePath;
+    }
+
+    public String getTankTexturePath() {
+        return tankTexturePath;
     }
 
     public LevelProvider getLevelProvider() {
