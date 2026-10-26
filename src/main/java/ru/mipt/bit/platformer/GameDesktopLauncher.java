@@ -11,6 +11,8 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.GridPoint2;
+import ru.mipt.bit.platformer.ai.Bot;
+import ru.mipt.bit.platformer.ai.RandomMoveStrategy;
 import ru.mipt.bit.platformer.config.GameConfig;
 import ru.mipt.bit.platformer.config.Level;
 import ru.mipt.bit.platformer.config.ObstacleSpec;
@@ -48,6 +50,7 @@ public class GameDesktopLauncher implements ApplicationListener {
     private EntityRenderer playerRenderer;
     private final Map<GameObject, EntityRenderer> obstacleRenderers = new LinkedHashMap<>();
     private final Map<GameObject, EntityRenderer> tankRenderers = new LinkedHashMap<>();
+    private final List<Bot> bots = new ArrayList<>();
 
     private InputHandler inputHandler;
 
@@ -76,16 +79,20 @@ public class GameDesktopLauncher implements ApplicationListener {
         player = new MovableEntity(gameLevel.getPlayerCoordinates(), gameLevel.getSize());
         playerRenderer = new EntityRenderer(config.getPlayerTexturePath(), player, tileMovement);
 
+        List<GameObject> obstacles = new ArrayList<>();
+        obstacles.add(player);
         for (ObstacleSpec obstacle : gameLevel.getObstacles()) {
             GameObject object = new GameObject(obstacle.getCoordinates());
             obstacleRenderers.put(object, new EntityRenderer(obstacle.getTexturePath(), object, tileMovement));
+            obstacles.add(object);
         }
 
-        List<GameObject> obstacles = new ArrayList<>(obstacleRenderers.keySet());
+        RandomMoveStrategy strategy = new RandomMoveStrategy();
         for (GridPoint2 coordinates : gameLevel.getTankCoordinates()) {
             MovableEntity tank = new MovableEntity(coordinates, gameLevel.getSize());
             tankRenderers.put(tank, new EntityRenderer(config.getTankTexturePath(), tank, tileMovement));
             obstacles.add(tank);
+            bots.add(new Bot(tank, strategy, obstacles));
         }
 
         inputHandler = new InputHandler();
@@ -108,6 +115,11 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         // update player model state
         player.update(deltaTime, config.getMovementSpeed());
+
+        // update bot tanks driven by AI
+        for (Bot bot : bots) {
+            bot.update(deltaTime, config.getMovementSpeed());
+        }
 
         // render each tile of the level
         levelRenderer.render();
