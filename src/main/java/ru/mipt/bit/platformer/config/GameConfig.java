@@ -21,6 +21,7 @@ public class GameConfig {
     private final Interpolation movementInterpolation;
     private final String playerTexturePath;
     private final String tankTexturePath;
+    private final String treeTexturePath;
     private final LevelProvider levelProvider;
     private final Map<Direction, int[]> keyBindings;
 
@@ -32,6 +33,7 @@ public class GameConfig {
         this.movementInterpolation = builder.movementInterpolation;
         this.playerTexturePath = builder.playerTexturePath;
         this.tankTexturePath = builder.tankTexturePath;
+        this.treeTexturePath = builder.treeTexturePath;
         this.levelProvider = builder.levelProvider;
         this.keyBindings = builder.keyBindings;
     }
@@ -68,6 +70,10 @@ public class GameConfig {
         return tankTexturePath;
     }
 
+    public String getTreeTexturePath() {
+        return treeTexturePath;
+    }
+
     public LevelProvider getLevelProvider() {
         return levelProvider;
     }
@@ -85,7 +91,8 @@ public class GameConfig {
         private Interpolation movementInterpolation = Interpolation.smooth;
         private String playerTexturePath = "images/tank_blue.png";
         private String tankTexturePath = "images/tank_blue.png";
-        private LevelProvider levelProvider = new FileLevelProvider("level.txt", "images/greenTree.png");
+        private String treeTexturePath = "images/greenTree.png";
+        private LevelProvider levelProvider = new FileLevelProvider("level.txt");
         private Map<Direction, int[]> keyBindings = defaultKeyBindings();
 
         public Builder levelPath(String levelPath) {
@@ -120,6 +127,11 @@ public class GameConfig {
 
         public Builder tankTexturePath(String tankTexturePath) {
             this.tankTexturePath = tankTexturePath;
+            return this;
+        }
+
+        public Builder treeTexturePath(String treeTexturePath) {
+            this.treeTexturePath = treeTexturePath;
             return this;
         }
 

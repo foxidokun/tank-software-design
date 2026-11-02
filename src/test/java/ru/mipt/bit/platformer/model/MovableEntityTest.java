@@ -3,22 +3,20 @@ package ru.mipt.bit.platformer.model;
 import com.badlogic.gdx.math.GridPoint2;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class MovableEntityTest {
 
-    private static final GridPoint2 FIELD_SIZE = new GridPoint2(10, 8);
+    private static final float SPEED = 0.4f;
 
-    private final MovableEntity player = new MovableEntity(new GridPoint2(1, 1), FIELD_SIZE);
+    private final GameLevel level = new GameLevel(new GridPoint2(10, 8));
+    private final MovableEntity player = new MovableEntity(new GridPoint2(1, 1), level, SPEED);
 
     @Test
     public void tryMoveSetsDestinationToNeighbourTile() {
-        player.tryMove(Direction.UP, Collections.emptyList());
+        player.tryMove(Direction.UP);
 
         assertEquals(new GridPoint2(1, 2), player.getDestinationCoordinates());
         assertEquals(0f, player.getMovementProgress(), 0f);
@@ -27,9 +25,9 @@ public class MovableEntityTest {
 
     @Test
     public void tryMoveIntoObstacleOnlyTurnsThePlayer() {
-        List<GameObject> obstacles = Collections.singletonList(new GameObject(new GridPoint2(1, 0)));
+        level.add(new GameObject(new GridPoint2(1, 0)));
 
-        player.tryMove(Direction.DOWN, obstacles);
+        player.tryMove(Direction.DOWN);
 
         assertEquals(new GridPoint2(1, 1), player.getDestinationCoordinates());
         assertEquals(-90f, player.getRotation(), 0f);
@@ -37,19 +35,19 @@ public class MovableEntityTest {
 
     @Test
     public void tryMoveIsIgnoredWhilePreviousMovementIsNotFinished() {
-        player.tryMove(Direction.RIGHT, Collections.emptyList());
-        player.update(0.1f, 0.4f); // movement is still in progress
+        player.tryMove(Direction.RIGHT);
+        player.live(0.1f); // movement is still in progress
 
-        player.tryMove(Direction.UP, Collections.emptyList());
+        player.tryMove(Direction.UP);
 
         assertEquals(new GridPoint2(2, 1), player.getDestinationCoordinates());
     }
 
     @Test
-    public void updateMovesCoordinatesToDestinationWhenMovementFinishes() {
-        player.tryMove(Direction.RIGHT, Collections.emptyList());
+    public void liveMovesCoordinatesToDestinationWhenMovementFinishes() {
+        player.tryMove(Direction.RIGHT);
 
-        player.update(0.4f, 0.4f);
+        player.live(SPEED);
 
         assertEquals(1f, player.getMovementProgress(), 0f);
         assertEquals(new GridPoint2(2, 1), player.getCoordinates());
@@ -57,7 +55,7 @@ public class MovableEntityTest {
 
     @Test
     public void returnedDestinationCoordinatesCannotBeMutated() {
-        player.tryMove(Direction.UP, Collections.emptyList());
+        player.tryMove(Direction.UP);
 
         player.getDestinationCoordinates().set(5, 5);
 
@@ -66,21 +64,22 @@ public class MovableEntityTest {
 
     @Test
     public void tryMoveBeyondFieldBoundsOnlyTurnsThePlayer() {
-        MovableEntity tank = new MovableEntity(new GridPoint2(0, 0), new GridPoint2(1, 1));
+        GameLevel smallLevel = new GameLevel(new GridPoint2(1, 1));
+        MovableEntity tank = new MovableEntity(new GridPoint2(0, 0), smallLevel, SPEED);
 
-        tank.tryMove(Direction.LEFT, Collections.emptyList());
+        tank.tryMove(Direction.LEFT);
 
         assertEquals(new GridPoint2(0, 0), tank.getDestinationCoordinates());
         assertEquals(-180f, tank.getRotation(), 0f);
 
-        tank.tryMove(Direction.UP, Collections.emptyList());
+        tank.tryMove(Direction.UP);
 
         assertEquals(new GridPoint2(0, 0), tank.getDestinationCoordinates());
     }
 
     @Test
     public void movingTankOccupiesBothSourceAndDestinationCells() {
-        player.tryMove(Direction.UP, Collections.emptyList());
+        player.tryMove(Direction.UP);
 
         assertTrue(player.collidesAt(new GridPoint2(1, 1)));
         assertTrue(player.collidesAt(new GridPoint2(1, 2)));
@@ -89,16 +88,16 @@ public class MovableEntityTest {
 
     @Test
     public void tankCannotMoveIntoCellsOfMovingTank() {
-        MovableEntity moving = new MovableEntity(new GridPoint2(1, 1), FIELD_SIZE);
-        moving.tryMove(Direction.UP, Collections.emptyList());
-        List<GameObject> obstacles = Collections.singletonList(moving);
+        MovableEntity moving = new MovableEntity(new GridPoint2(1, 1), level, SPEED);
+        level.add(moving);
+        moving.tryMove(Direction.UP);
 
-        MovableEntity neighbour = new MovableEntity(new GridPoint2(0, 1), FIELD_SIZE);
-        neighbour.tryMove(Direction.RIGHT, obstacles);
+        MovableEntity neighbour = new MovableEntity(new GridPoint2(0, 1), level, SPEED);
+        neighbour.tryMove(Direction.RIGHT);
         assertEquals(new GridPoint2(0, 1), neighbour.getDestinationCoordinates());
 
-        MovableEntity upperNeighbour = new MovableEntity(new GridPoint2(0, 2), FIELD_SIZE);
-        upperNeighbour.tryMove(Direction.RIGHT, obstacles);
+        MovableEntity upperNeighbour = new MovableEntity(new GridPoint2(0, 2), level, SPEED);
+        upperNeighbour.tryMove(Direction.RIGHT);
         assertEquals(new GridPoint2(0, 2), upperNeighbour.getDestinationCoordinates());
     }
 }

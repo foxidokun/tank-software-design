@@ -17,14 +17,12 @@ public class RandomLevelProvider implements LevelProvider {
     private final int width;
     private final int height;
     private final int obstacleCount;
-    private final String treeTexturePath;
     private final Random random = new Random();
 
-    public RandomLevelProvider(int width, int height, int obstacleCount, String treeTexturePath) {
+    public RandomLevelProvider(int width, int height, int obstacleCount) {
         this.width = width;
         this.height = height;
         this.obstacleCount = obstacleCount;
-        this.treeTexturePath = treeTexturePath;
     }
 
     @Override
@@ -39,10 +37,10 @@ public class RandomLevelProvider implements LevelProvider {
 
         GridPoint2 playerCoordinates = cells.get(0);
 
-        List<ObstacleSpec> obstacles = new ArrayList<>();
+        List<GridPoint2> obstacles = new ArrayList<>();
         int count = Math.min(obstacleCount, cells.size() - 1);
         for (int i = 1; i <= count; i++) {
-            obstacles.add(new ObstacleSpec(treeTexturePath, cells.get(i)));
+            obstacles.add(cells.get(i));
         }
 
         return new Level(playerCoordinates, Collections.emptyList(), obstacles, new GridPoint2(width, height));

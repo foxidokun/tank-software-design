@@ -17,8 +17,7 @@ public class RandomLevelProviderTest {
     private static final int HEIGHT = 4;
     private static final int OBSTACLE_COUNT = 6;
 
-    private final RandomLevelProvider provider =
-            new RandomLevelProvider(WIDTH, HEIGHT, OBSTACLE_COUNT, "images/greenTree.png");
+    private final RandomLevelProvider provider = new RandomLevelProvider(WIDTH, HEIGHT, OBSTACLE_COUNT);
 
     @Test
     public void placesPlayerSomewhereInsideTheLevel() {
@@ -39,17 +38,14 @@ public class RandomLevelProviderTest {
     public void fillsLevelWithDistinctObstaclesOutsidePlayerCell() {
         Level level = provider.provide();
 
-        assertEquals(OBSTACLE_COUNT, level.getObstacles().size());
+        assertEquals(OBSTACLE_COUNT, level.getObstacleCoordinates().size());
 
         List<GridPoint2> occupiedCells = new ArrayList<>();
-        for (ObstacleSpec obstacle : level.getObstacles()) {
-            GridPoint2 coordinates = obstacle.getCoordinates();
-
+        for (GridPoint2 coordinates : level.getObstacleCoordinates()) {
             assertTrue(coordinates.x >= 0 && coordinates.x < WIDTH);
             assertTrue(coordinates.y >= 0 && coordinates.y < HEIGHT);
             assertFalse(occupiedCells.contains(coordinates));
             assertNotEquals(level.getPlayerCoordinates(), coordinates);
-            assertEquals("images/greenTree.png", obstacle.getTexturePath());
 
             occupiedCells.add(coordinates);
         }

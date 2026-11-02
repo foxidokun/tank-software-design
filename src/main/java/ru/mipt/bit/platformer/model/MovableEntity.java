@@ -2,28 +2,28 @@ package ru.mipt.bit.platformer.model;
 
 import com.badlogic.gdx.math.GridPoint2;
 
-import java.util.Collection;
-
 import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.continueProgress;
 
 public class MovableEntity extends GameObject {
 
+    private final GameLevel level;
     private final GridPoint2 destinationCoordinates;
-    private final GridPoint2 fieldSize;
+    private final float speed;
     private float movementProgress = 1f;
     private float rotation;
 
-    public MovableEntity(GridPoint2 coordinates, GridPoint2 fieldSize) {
+    public MovableEntity(GridPoint2 coordinates, GameLevel level, float speed) {
         super(coordinates);
+        this.level = level;
+        this.speed = speed;
         this.destinationCoordinates = new GridPoint2(coordinates);
-        this.fieldSize = new GridPoint2(fieldSize);
     }
 
-    public void tryMove(Direction direction, Collection<GameObject> obstacles) {
+    public void tryMove(Direction direction) {
         if (isEqual(movementProgress, 1f)) {
             GridPoint2 target = direction.move(coordinates);
-            if (insideField(target) && noCollision(target, obstacles)) {
+            if (level.isInside(target) && level.objectAt(target) == null) {
                 destinationCoordinates.set(target);
                 movementProgress = 0f;
             }
@@ -31,8 +31,9 @@ public class MovableEntity extends GameObject {
         }
     }
 
-    public void update(float deltaTime, float speed) {
-        movementProgress = continueProgress(movementProgress, deltaTime, speed);
+    @Override
+    public void live(float tick) {
+        movementProgress = continueProgress(movementProgress, tick, speed);
         if (isEqual(movementProgress, 1f)) {
             coordinates.set(destinationCoordinates);
         }
@@ -56,18 +57,5 @@ public class MovableEntity extends GameObject {
     @Override
     public float getRotation() {
         return rotation;
-    }
-
-    private boolean insideField(GridPoint2 target) {
-        return target.x >= 0 && target.x < fieldSize.x && target.y >= 0 && target.y < fieldSize.y;
-    }
-
-    private boolean noCollision(GridPoint2 target, Collection<GameObject> obstacles) {
-        for (GameObject obstacle : obstacles) {
-            if (obstacle.collidesAt(target)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
