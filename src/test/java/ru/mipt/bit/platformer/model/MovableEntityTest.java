@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MovableEntityTest {
 
@@ -74,6 +76,15 @@ public class MovableEntityTest {
         tank.tryMove(Direction.UP, Collections.emptyList());
 
         assertEquals(new GridPoint2(0, 0), tank.getDestinationCoordinates());
+    }
+
+    @Test
+    public void movingTankOccupiesBothSourceAndDestinationCells() {
+        player.tryMove(Direction.UP, Collections.emptyList());
+
+        assertTrue(player.collidesAt(new GridPoint2(1, 1)));
+        assertTrue(player.collidesAt(new GridPoint2(1, 2)));
+        assertFalse(player.collidesAt(new GridPoint2(2, 1)));
     }
 
     @Test

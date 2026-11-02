@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.GridPoint2;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class GameObjectTest {
 
@@ -40,5 +42,13 @@ public class GameObjectTest {
         object.getDestinationCoordinates().set(5, 5);
 
         assertEquals(new GridPoint2(2, 3), object.getDestinationCoordinates());
+    }
+
+    @Test
+    public void collidesOnlyAtOwnCoordinates() {
+        GameObject object = new GameObject(new GridPoint2(2, 3));
+
+        assertTrue(object.collidesAt(new GridPoint2(2, 3)));
+        assertFalse(object.collidesAt(new GridPoint2(5, 5)));
     }
 }

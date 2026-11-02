@@ -10,6 +10,10 @@ public class GameObject {
         this.coordinates = new GridPoint2(coordinates);
     }
 
+    public boolean collidesAt(GridPoint2 coordinates) {
+        return this.coordinates.equals(coordinates);
+    }
+
     public GridPoint2 getCoordinates() {
         return new GridPoint2(coordinates);
     }

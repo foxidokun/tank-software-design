@@ -39,6 +39,11 @@ public class MovableEntity extends GameObject {
     }
 
     @Override
+    public boolean collidesAt(GridPoint2 coordinates) {
+        return super.collidesAt(coordinates) || destinationCoordinates.equals(coordinates);
+    }
+
+    @Override
     public GridPoint2 getDestinationCoordinates() {
         return new GridPoint2(destinationCoordinates);
     }
@@ -59,7 +64,7 @@ public class MovableEntity extends GameObject {
 
     private boolean noCollision(GridPoint2 target, Collection<GameObject> obstacles) {
         for (GameObject obstacle : obstacles) {
-            if (obstacle.getCoordinates().equals(target) || obstacle.getDestinationCoordinates().equals(target)) {
+            if (obstacle.collidesAt(target)) {
                 return false;
             }
         }
