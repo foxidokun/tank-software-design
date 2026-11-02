@@ -40,7 +40,7 @@ public class MovableEntity extends GameObject {
 
     @Override
     public GridPoint2 getDestinationCoordinates() {
-        return destinationCoordinates;
+        return new GridPoint2(destinationCoordinates);
     }
 
     @Override

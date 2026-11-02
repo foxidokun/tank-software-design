@@ -11,7 +11,7 @@ public class GameObject {
     }
 
     public GridPoint2 getCoordinates() {
-        return coordinates;
+        return new GridPoint2(coordinates);
     }
 
     /**
@@ -20,7 +20,7 @@ public class GameObject {
      * exactly at their tile.
      */
     public GridPoint2 getDestinationCoordinates() {
-        return coordinates;
+        return new GridPoint2(coordinates);
     }
 
     public float getMovementProgress() {

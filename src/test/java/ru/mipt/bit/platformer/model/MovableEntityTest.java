@@ -54,6 +54,15 @@ public class MovableEntityTest {
     }
 
     @Test
+    public void returnedDestinationCoordinatesCannotBeMutated() {
+        player.tryMove(Direction.UP, Collections.emptyList());
+
+        player.getDestinationCoordinates().set(5, 5);
+
+        assertEquals(new GridPoint2(1, 2), player.getDestinationCoordinates());
+    }
+
+    @Test
     public void tryMoveBeyondFieldBoundsOnlyTurnsThePlayer() {
         MovableEntity tank = new MovableEntity(new GridPoint2(0, 0), new GridPoint2(1, 1));
 
