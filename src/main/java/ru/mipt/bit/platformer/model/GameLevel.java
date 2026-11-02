@@ -8,11 +8,23 @@ import java.util.List;
 public class GameLevel {
 
     private final GridPoint2 size;
+    private final int bulletDamage;
+    private final float bulletSpeed;
     private final List<GameObject> objects = new ArrayList<>();
     private final List<LevelListener> listeners = new ArrayList<>();
 
-    public GameLevel(GridPoint2 size) {
+    public GameLevel(GridPoint2 size, int bulletDamage, float bulletSpeed) {
         this.size = new GridPoint2(size);
+        this.bulletDamage = bulletDamage;
+        this.bulletSpeed = bulletSpeed;
+    }
+
+    public int getBulletDamage() {
+        return bulletDamage;
+    }
+
+    public float getBulletSpeed() {
+        return bulletSpeed;
     }
 
     public void addListener(LevelListener listener) {
@@ -27,9 +39,10 @@ public class GameLevel {
     }
 
     public void remove(GameObject object) {
-        objects.remove(object);
-        for (LevelListener listener : listeners) {
-            listener.objectRemoved(object);
+        if (objects.remove(object)) {
+            for (LevelListener listener : listeners) {
+                listener.objectRemoved(object);
+            }
         }
     }
 

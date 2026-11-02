@@ -1,5 +1,6 @@
 package ru.mipt.bit.platformer.config;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Interpolation;
 import org.junit.Test;
 import ru.mipt.bit.platformer.model.Direction;
@@ -28,6 +29,11 @@ public class GameConfigTest {
                 .playerTexturePath("images/tank_green.png")
                 .tankTexturePath("images/tank_red.png")
                 .treeTexturePath("images/bush.png")
+                .bulletTexturePath("images/bullet.png")
+                .tankHealth(5)
+                .bulletDamage(2)
+                .bulletSpeed(0.2f)
+                .shootKey(Keys.SPACE)
                 .levelProvider(provider)
                 .keyBindings(bindings)
                 .build();
@@ -40,6 +46,11 @@ public class GameConfigTest {
         assertEquals("images/tank_green.png", config.getPlayerTexturePath());
         assertEquals("images/tank_red.png", config.getTankTexturePath());
         assertEquals("images/bush.png", config.getTreeTexturePath());
+        assertEquals("images/bullet.png", config.getBulletTexturePath());
+        assertEquals(5, config.getTankHealth());
+        assertEquals(2, config.getBulletDamage());
+        assertEquals(0.2f, config.getBulletSpeed(), 0f);
+        assertEquals(Keys.SPACE, config.getShootKey());
         assertSame(provider, config.getLevelProvider());
         assertSame(bindings, config.getKeyBindings());
     }

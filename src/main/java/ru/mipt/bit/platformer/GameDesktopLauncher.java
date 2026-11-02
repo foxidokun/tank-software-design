@@ -31,6 +31,7 @@ import ru.mipt.bit.platformer.model.GameLevel;
 import ru.mipt.bit.platformer.model.GameObject;
 import ru.mipt.bit.platformer.model.MoveCommand;
 import ru.mipt.bit.platformer.model.MovableEntity;
+import ru.mipt.bit.platformer.model.ShootCommand;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import java.util.ArrayList;
@@ -78,8 +79,8 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         Level level = new RandomTankProvider(config.getLevelProvider(), 5).provide();
 
-        gameLevel = new GameLevel(level.getSize());
-        player = new MovableEntity(level.getPlayerCoordinates(), gameLevel, config.getMovementSpeed());
+        gameLevel = new GameLevel(level.getSize(), config.getBulletDamage(), config.getBulletSpeed());
+        player = new MovableEntity(level.getPlayerCoordinates(), gameLevel, config.getMovementSpeed(), config.getTankHealth());
         levelRenderer = new LevelRenderer(config, player, tileMovement);
         gameLevel.addListener(levelRenderer);
 
@@ -90,7 +91,7 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         BotStrategy strategy = new RandomBotStrategy();
         for (GridPoint2 coordinates : level.getTankCoordinates()) {
-            MovableEntity tank = new MovableEntity(coordinates, gameLevel, config.getMovementSpeed());
+            MovableEntity tank = new MovableEntity(coordinates, gameLevel, config.getMovementSpeed(), config.getTankHealth());
             gameLevel.add(tank);
             bots.add(new Bot(tank, strategy));
         }
@@ -102,6 +103,7 @@ public class GameDesktopLauncher implements ApplicationListener {
             Direction direction = binding.getKey();
             inputHandler.add(new FuncButtonHandler(player, keyState, tank -> new MoveCommand(tank, direction), binding.getValue()));
         }
+        inputHandler.add(new FuncButtonHandler(player, keyState, ShootCommand::new, config.getShootKey()));
     }
 
     @Override

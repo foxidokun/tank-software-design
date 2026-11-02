@@ -15,14 +15,14 @@ public class RandomBotStrategyTest {
 
     @Test
     public void nextCommandMovesTankToANeighbourTile() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
         RandomBotStrategy strategy = new RandomBotStrategy();
         List<GridPoint2> neighbours = Arrays.stream(Direction.values())
                 .map(direction -> direction.move(new GridPoint2(1, 1)))
                 .toList();
 
         for (int attempt = 0; attempt < 100; attempt++) {
-            MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f);
+            MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
 
             strategy.nextCommand(tank).execute();
 

@@ -16,7 +16,7 @@ public class GameLevelTest {
 
     @Test
     public void addStoresObjectAndNotifiesListeners() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
         List<GameObject> added = new ArrayList<>();
         level.addListener(new LevelListener() {
             @Override
@@ -39,7 +39,7 @@ public class GameLevelTest {
 
     @Test
     public void removeDeletesObjectAndNotifiesListeners() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
         List<GameObject> removed = new ArrayList<>();
         level.addListener(new LevelListener() {
             @Override
@@ -62,8 +62,8 @@ public class GameLevelTest {
 
     @Test
     public void liveTicksEveryObjectOfTheLevel() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
-        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f);
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
         level.add(tank);
         tank.tryMove(Direction.RIGHT);
 
@@ -74,9 +74,9 @@ public class GameLevelTest {
 
     @Test
     public void objectAtReturnsObjectOccupyingTheCell() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
         GameObject tree = new GameObject(new GridPoint2(2, 2));
-        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f);
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
         level.add(tree);
         level.add(tank);
         tank.tryMove(Direction.UP);
@@ -89,7 +89,7 @@ public class GameLevelTest {
 
     @Test
     public void isInsideChecksLevelBounds() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
 
         assertTrue(level.isInside(new GridPoint2(0, 0)));
         assertTrue(level.isInside(new GridPoint2(9, 7)));

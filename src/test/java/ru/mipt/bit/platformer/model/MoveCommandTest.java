@@ -9,8 +9,8 @@ public class MoveCommandTest {
 
     @Test
     public void executeMovesTankInCommandDirection() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
-        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f);
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
 
         new MoveCommand(tank, Direction.UP).execute();
 
@@ -19,9 +19,9 @@ public class MoveCommandTest {
 
     @Test
     public void executeKeepsTankInPlaceWhenTargetCellIsOccupied() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
         level.add(new GameObject(new GridPoint2(1, 0)));
-        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f);
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
 
         new MoveCommand(tank, Direction.DOWN).execute();
 

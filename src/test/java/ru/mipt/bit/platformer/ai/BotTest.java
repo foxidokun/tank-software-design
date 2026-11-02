@@ -14,8 +14,8 @@ public class BotTest {
 
     @Test
     public void createCommandAsksStrategyForTheTank() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
-        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f);
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
         Bot bot = new Bot(tank, movingTank -> new MoveCommand(movingTank, Direction.UP));
 
         Command command = bot.createCommand();
@@ -26,8 +26,8 @@ public class BotTest {
 
     @Test
     public void createCommandExecutedRepeatedlyDrivesTheTank() {
-        GameLevel level = new GameLevel(new GridPoint2(10, 8));
-        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f);
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
         Bot bot = new Bot(tank, movingTank -> new MoveCommand(movingTank, Direction.RIGHT));
 
         bot.createCommand().execute();

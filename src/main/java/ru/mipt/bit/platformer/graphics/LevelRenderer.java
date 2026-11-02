@@ -2,6 +2,7 @@ package ru.mipt.bit.platformer.graphics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import ru.mipt.bit.platformer.config.GameConfig;
+import ru.mipt.bit.platformer.model.Bullet;
 import ru.mipt.bit.platformer.model.GameObject;
 import ru.mipt.bit.platformer.model.LevelListener;
 import ru.mipt.bit.platformer.model.MovableEntity;
@@ -48,6 +49,9 @@ public class LevelRenderer implements LevelListener {
     private String texturePath(GameObject object) {
         if (object == player) {
             return config.getPlayerTexturePath();
+        }
+        if (object instanceof Bullet) {
+            return config.getBulletTexturePath();
         }
         if (object instanceof MovableEntity) {
             return config.getTankTexturePath();

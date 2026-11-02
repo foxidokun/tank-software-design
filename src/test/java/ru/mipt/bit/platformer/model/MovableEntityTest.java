@@ -10,9 +10,10 @@ import static org.junit.Assert.assertTrue;
 public class MovableEntityTest {
 
     private static final float SPEED = 0.4f;
+    private static final int HEALTH = 3;
 
-    private final GameLevel level = new GameLevel(new GridPoint2(10, 8));
-    private final MovableEntity player = new MovableEntity(new GridPoint2(1, 1), level, SPEED);
+    private final GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
+    private final MovableEntity player = new MovableEntity(new GridPoint2(1, 1), level, SPEED, HEALTH);
 
     @Test
     public void tryMoveSetsDestinationToNeighbourTile() {
@@ -64,8 +65,8 @@ public class MovableEntityTest {
 
     @Test
     public void tryMoveBeyondFieldBoundsOnlyTurnsThePlayer() {
-        GameLevel smallLevel = new GameLevel(new GridPoint2(1, 1));
-        MovableEntity tank = new MovableEntity(new GridPoint2(0, 0), smallLevel, SPEED);
+        GameLevel smallLevel = new GameLevel(new GridPoint2(1, 1), 1, 0.1f);
+        MovableEntity tank = new MovableEntity(new GridPoint2(0, 0), smallLevel, SPEED, HEALTH);
 
         tank.tryMove(Direction.LEFT);
 
@@ -88,16 +89,103 @@ public class MovableEntityTest {
 
     @Test
     public void tankCannotMoveIntoCellsOfMovingTank() {
-        MovableEntity moving = new MovableEntity(new GridPoint2(1, 1), level, SPEED);
+        MovableEntity moving = new MovableEntity(new GridPoint2(1, 1), level, SPEED, HEALTH);
         level.add(moving);
         moving.tryMove(Direction.UP);
 
-        MovableEntity neighbour = new MovableEntity(new GridPoint2(0, 1), level, SPEED);
+        MovableEntity neighbour = new MovableEntity(new GridPoint2(0, 1), level, SPEED, HEALTH);
         neighbour.tryMove(Direction.RIGHT);
         assertEquals(new GridPoint2(0, 1), neighbour.getDestinationCoordinates());
 
-        MovableEntity upperNeighbour = new MovableEntity(new GridPoint2(0, 2), level, SPEED);
+        MovableEntity upperNeighbour = new MovableEntity(new GridPoint2(0, 2), level, SPEED, HEALTH);
         upperNeighbour.tryMove(Direction.RIGHT);
         assertEquals(new GridPoint2(0, 2), upperNeighbour.getDestinationCoordinates());
+    }
+
+    @Test
+    public void shootRegistersBulletInFacedNeighbourCell() {
+        player.shoot();
+
+        assertEquals(1, level.getObjects().size());
+        GameObject bullet = level.getObjects().get(0);
+        assertTrue(bullet instanceof Bullet);
+        assertEquals(new GridPoint2(2, 1), bullet.getCoordinates());
+    }
+
+    @Test
+    public void shootIsIgnoredWhileMovementIsNotFinished() {
+        player.tryMove(Direction.UP);
+
+        player.shoot();
+
+        assertTrue(level.getObjects().isEmpty());
+    }
+
+    @Test
+    public void shootTowardsObstacleDoesNotCreateBullet() {
+        level.add(new GameObject(new GridPoint2(2, 1)));
+
+        player.shoot();
+
+        assertEquals(1, level.getObjects().size());
+        assertFalse(level.getObjects().get(0) instanceof Bullet);
+    }
+
+    @Test
+    public void shootTowardsLevelEdgeDoesNotCreateBullet() {
+        MovableEntity tank = new MovableEntity(new GridPoint2(9, 1), level, SPEED, HEALTH);
+
+        tank.shoot();
+
+        assertTrue(level.getObjects().isEmpty());
+    }
+
+    @Test
+    public void shootHitsAdjacentTankWithoutCreatingBullet() {
+        MovableEntity enemy = new MovableEntity(new GridPoint2(2, 1), level, SPEED, HEALTH);
+        level.add(enemy);
+
+        player.shoot();
+
+        assertEquals(HEALTH - 1, enemy.getHealth());
+        assertEquals(1, level.getObjects().size());
+    }
+
+    @Test
+    public void shootKillsAdjacentTankWhenHealthRunsOut() {
+        MovableEntity enemy = new MovableEntity(new GridPoint2(2, 1), level, SPEED, 1);
+        level.add(enemy);
+
+        player.shoot();
+
+        assertTrue(level.getObjects().isEmpty());
+    }
+
+    @Test
+    public void hitReducesHealthAndRemovesDeadTankFromLevel() {
+        level.add(player);
+
+        player.hit(2);
+
+        assertEquals(HEALTH - 2, player.getHealth());
+        assertFalse(player.isDead());
+        assertEquals(1, level.getObjects().size());
+
+        player.hit(1);
+
+        assertTrue(player.isDead());
+        assertTrue(level.getObjects().isEmpty());
+    }
+
+    @Test
+    public void deadTankIgnoresMoveAndShoot() {
+        level.add(player);
+        player.hit(HEALTH);
+
+        player.tryMove(Direction.UP);
+        player.shoot();
+
+        assertEquals(new GridPoint2(1, 1), player.getDestinationCoordinates());
+        assertTrue(level.getObjects().isEmpty());
     }
 }
