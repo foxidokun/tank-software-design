@@ -27,6 +27,13 @@ public class GameConfig {
 
     private Map<Direction, int[]> keyBindings = defaultKeyBindings();
 
+    public GameConfig() {
+    }
+
+    public GameConfig(LevelProvider levelProvider) {
+        this.levelProvider = levelProvider;
+    }
+
     private static Map<Direction, int[]> defaultKeyBindings() {
         Map<Direction, int[]> bindings = new EnumMap<>(Direction.class);
         bindings.put(Direction.UP, new int[]{Keys.UP, Keys.W});

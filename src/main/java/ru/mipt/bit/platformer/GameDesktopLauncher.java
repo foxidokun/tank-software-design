@@ -13,9 +13,12 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.ai.Bot;
 import ru.mipt.bit.platformer.ai.RandomMoveStrategy;
+import ru.mipt.bit.platformer.config.FileLevelProvider;
 import ru.mipt.bit.platformer.config.GameConfig;
 import ru.mipt.bit.platformer.config.Level;
+import ru.mipt.bit.platformer.config.LevelProvider;
 import ru.mipt.bit.platformer.config.ObstacleSpec;
+import ru.mipt.bit.platformer.config.RandomLevelProvider;
 import ru.mipt.bit.platformer.config.RandomTankProvider;
 import ru.mipt.bit.platformer.graphics.EntityRenderer;
 import ru.mipt.bit.platformer.input.GdxKeyStateProvider;
@@ -174,11 +177,22 @@ public class GameDesktopLauncher implements ApplicationListener {
     }
 
     public static void main(String[] args) {
-        GameConfig config = new GameConfig();
+        GameConfig config = new GameConfig(levelProvider(args));
 
         Lwjgl3ApplicationConfiguration appConfig = new Lwjgl3ApplicationConfiguration();
         // level width: 10 tiles x 128px, height: 8 tiles x 128px
         appConfig.setWindowedMode(config.getWindowWidth(), config.getWindowHeight());
         new Lwjgl3Application(new GameDesktopLauncher(config), appConfig);
+    }
+
+    private static LevelProvider levelProvider(String[] args) {
+        String mode = args.length > 0 ? args[0] : "file";
+        if (mode.equals("file")) {
+            return new FileLevelProvider("level.txt", "images/greenTree.png");
+        }
+        if (mode.equals("random")) {
+            return new RandomLevelProvider(10, 8, 15, "images/greenTree.png");
+        }
+        throw new IllegalArgumentException("Unknown level provider: " + mode);
     }
 }
