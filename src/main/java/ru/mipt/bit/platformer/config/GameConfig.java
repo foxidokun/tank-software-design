@@ -14,33 +14,30 @@ import java.util.Map;
  */
 public class GameConfig {
 
-    private String levelPath = "level.tmx";
-    private int windowWidth = 1280;
-    private int windowHeight = 1024;
-    private float movementSpeed = 0.4f;
-    private Interpolation movementInterpolation = Interpolation.smooth;
+    private final String levelPath;
+    private final int windowWidth;
+    private final int windowHeight;
+    private final float movementSpeed;
+    private final Interpolation movementInterpolation;
+    private final String playerTexturePath;
+    private final String tankTexturePath;
+    private final LevelProvider levelProvider;
+    private final Map<Direction, int[]> keyBindings;
 
-    private String playerTexturePath = "images/tank_blue.png";
-    private String tankTexturePath = "images/tank_blue.png";
-
-    private LevelProvider levelProvider = new FileLevelProvider("level.txt", "images/greenTree.png");
-
-    private Map<Direction, int[]> keyBindings = defaultKeyBindings();
-
-    public GameConfig() {
+    private GameConfig(Builder builder) {
+        this.levelPath = builder.levelPath;
+        this.windowWidth = builder.windowWidth;
+        this.windowHeight = builder.windowHeight;
+        this.movementSpeed = builder.movementSpeed;
+        this.movementInterpolation = builder.movementInterpolation;
+        this.playerTexturePath = builder.playerTexturePath;
+        this.tankTexturePath = builder.tankTexturePath;
+        this.levelProvider = builder.levelProvider;
+        this.keyBindings = builder.keyBindings;
     }
 
-    public GameConfig(LevelProvider levelProvider) {
-        this.levelProvider = levelProvider;
-    }
-
-    private static Map<Direction, int[]> defaultKeyBindings() {
-        Map<Direction, int[]> bindings = new EnumMap<>(Direction.class);
-        bindings.put(Direction.UP, new int[]{Keys.UP, Keys.W});
-        bindings.put(Direction.LEFT, new int[]{Keys.LEFT, Keys.A});
-        bindings.put(Direction.DOWN, new int[]{Keys.DOWN, Keys.S});
-        bindings.put(Direction.RIGHT, new int[]{Keys.RIGHT, Keys.D});
-        return bindings;
+    public static Builder builder() {
+        return new Builder();
     }
 
     public String getLevelPath() {
@@ -77,5 +74,76 @@ public class GameConfig {
 
     public Map<Direction, int[]> getKeyBindings() {
         return keyBindings;
+    }
+
+    public static class Builder {
+
+        private String levelPath = "level.tmx";
+        private int windowWidth = 1280;
+        private int windowHeight = 1024;
+        private float movementSpeed = 0.4f;
+        private Interpolation movementInterpolation = Interpolation.smooth;
+        private String playerTexturePath = "images/tank_blue.png";
+        private String tankTexturePath = "images/tank_blue.png";
+        private LevelProvider levelProvider = new FileLevelProvider("level.txt", "images/greenTree.png");
+        private Map<Direction, int[]> keyBindings = defaultKeyBindings();
+
+        public Builder levelPath(String levelPath) {
+            this.levelPath = levelPath;
+            return this;
+        }
+
+        public Builder windowWidth(int windowWidth) {
+            this.windowWidth = windowWidth;
+            return this;
+        }
+
+        public Builder windowHeight(int windowHeight) {
+            this.windowHeight = windowHeight;
+            return this;
+        }
+
+        public Builder movementSpeed(float movementSpeed) {
+            this.movementSpeed = movementSpeed;
+            return this;
+        }
+
+        public Builder movementInterpolation(Interpolation movementInterpolation) {
+            this.movementInterpolation = movementInterpolation;
+            return this;
+        }
+
+        public Builder playerTexturePath(String playerTexturePath) {
+            this.playerTexturePath = playerTexturePath;
+            return this;
+        }
+
+        public Builder tankTexturePath(String tankTexturePath) {
+            this.tankTexturePath = tankTexturePath;
+            return this;
+        }
+
+        public Builder levelProvider(LevelProvider levelProvider) {
+            this.levelProvider = levelProvider;
+            return this;
+        }
+
+        public Builder keyBindings(Map<Direction, int[]> keyBindings) {
+            this.keyBindings = keyBindings;
+            return this;
+        }
+
+        public GameConfig build() {
+            return new GameConfig(this);
+        }
+
+        private static Map<Direction, int[]> defaultKeyBindings() {
+            Map<Direction, int[]> bindings = new EnumMap<>(Direction.class);
+            bindings.put(Direction.UP, new int[]{Keys.UP, Keys.W});
+            bindings.put(Direction.LEFT, new int[]{Keys.LEFT, Keys.A});
+            bindings.put(Direction.DOWN, new int[]{Keys.DOWN, Keys.S});
+            bindings.put(Direction.RIGHT, new int[]{Keys.RIGHT, Keys.D});
+            return bindings;
+        }
     }
 }

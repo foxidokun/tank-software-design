@@ -58,7 +58,7 @@ public class GameDesktopLauncher implements ApplicationListener {
     private InputHandler inputHandler;
 
     public GameDesktopLauncher() {
-        this(new GameConfig());
+        this(GameConfig.builder().build());
     }
 
     public GameDesktopLauncher(GameConfig config) {
@@ -177,7 +177,9 @@ public class GameDesktopLauncher implements ApplicationListener {
     }
 
     public static void main(String[] args) {
-        GameConfig config = new GameConfig(levelProvider(args));
+        GameConfig config = GameConfig.builder()
+                .levelProvider(levelProvider(args))
+                .build();
 
         Lwjgl3ApplicationConfiguration appConfig = new Lwjgl3ApplicationConfiguration();
         // level width: 10 tiles x 128px, height: 8 tiles x 128px
