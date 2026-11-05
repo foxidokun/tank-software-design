@@ -16,7 +16,7 @@ public class MoveButtonHandlerTest {
 
     @Test
     public void pressedKeyMovesPlayerInBoundDirection() {
-        MovableEntity player = new MovableEntity(new GridPoint2(1, 1));
+        MovableEntity player = new MovableEntity(new GridPoint2(1, 1), new GridPoint2(10, 8));
         KeyStateProvider pressedKeys = keyCode -> keyCode == Keys.W;
         MoveButtonHandler handler = new MoveButtonHandler(Direction.UP, player, noObstacles(), pressedKeys, Keys.UP, Keys.W);
 
@@ -27,7 +27,7 @@ public class MoveButtonHandlerTest {
 
     @Test
     public void noPressedKeyKeepsPlayerInPlace() {
-        MovableEntity player = new MovableEntity(new GridPoint2(1, 1));
+        MovableEntity player = new MovableEntity(new GridPoint2(1, 1), new GridPoint2(10, 8));
         KeyStateProvider pressedKeys = keyCode -> false;
         MoveButtonHandler handler = new MoveButtonHandler(Direction.LEFT, player, noObstacles(), pressedKeys, Keys.LEFT, Keys.A);
 
