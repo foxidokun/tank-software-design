@@ -9,11 +9,10 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Fills the level from a text file: T - tree, X - player start position, _ - empty cell.
+ * Fills the level from a text file: T - obstacle, X - player start position, _ - empty cell.
  * Example:
  * <pre>
  * ___T__T___
@@ -24,11 +23,9 @@ import java.util.List;
 public class FileLevelProvider implements LevelProvider {
 
     private final String resourcePath;
-    private final String treeTexturePath;
 
-    public FileLevelProvider(String resourcePath, String treeTexturePath) {
+    public FileLevelProvider(String resourcePath) {
         this.resourcePath = resourcePath;
-        this.treeTexturePath = treeTexturePath;
     }
 
     @Override
@@ -42,7 +39,7 @@ public class FileLevelProvider implements LevelProvider {
         }
 
         GridPoint2 playerCoordinates = null;
-        List<ObstacleSpec> obstacles = new ArrayList<>();
+        List<GridPoint2> obstacles = new ArrayList<>();
         int width = 0;
         for (String line : lines) {
             width = Math.max(width, line.length());
@@ -60,7 +57,7 @@ public class FileLevelProvider implements LevelProvider {
                     }
                     playerCoordinates = new GridPoint2(x, y);
                 } else if (cell == 'T') {
-                    obstacles.add(new ObstacleSpec(treeTexturePath, x, y));
+                    obstacles.add(new GridPoint2(x, y));
                 } else if (cell != '_') {
                     throw new IllegalArgumentException("Unknown cell '" + cell + "' at line " + (row + 1));
                 }
@@ -70,7 +67,7 @@ public class FileLevelProvider implements LevelProvider {
         if (playerCoordinates == null) {
             throw new IllegalArgumentException("Level must contain X with the player start position");
         }
-        return new Level(playerCoordinates, Collections.emptyList(), obstacles, new GridPoint2(width, lines.size()));
+        return new Level(playerCoordinates, List.of(), obstacles, new GridPoint2(width, lines.size()));
     }
 
     private List<String> readLines() {

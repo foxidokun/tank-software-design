@@ -18,7 +18,7 @@ public class RandomTankProviderTest {
         Level terrain = new Level(
                 new GridPoint2(0, 0),
                 Collections.emptyList(),
-                Collections.singletonList(new ObstacleSpec("images/greenTree.png", 1, 1)),
+                Collections.singletonList(new GridPoint2(1, 1)),
                 new GridPoint2(3, 3));
         RandomTankProvider provider = new RandomTankProvider(() -> terrain, 2);
 
@@ -28,9 +28,7 @@ public class RandomTankProviderTest {
 
         List<GridPoint2> occupiedCells = new ArrayList<>();
         occupiedCells.add(level.getPlayerCoordinates());
-        for (ObstacleSpec obstacle : level.getObstacles()) {
-            occupiedCells.add(obstacle.getCoordinates());
-        }
+        occupiedCells.addAll(level.getObstacleCoordinates());
         for (GridPoint2 tank : level.getTankCoordinates()) {
             assertTrue(tank.x >= 0 && tank.x < 3);
             assertTrue(tank.y >= 0 && tank.y < 3);
@@ -45,14 +43,14 @@ public class RandomTankProviderTest {
         Level terrain = new Level(
                 new GridPoint2(2, 2),
                 Collections.emptyList(),
-                Collections.singletonList(new ObstacleSpec("images/greenTree.png", 0, 0)),
+                Collections.singletonList(new GridPoint2(0, 0)),
                 new GridPoint2(5, 5));
         RandomTankProvider provider = new RandomTankProvider(() -> terrain, 1);
 
         Level level = provider.provide();
 
         assertEquals(terrain.getPlayerCoordinates(), level.getPlayerCoordinates());
-        assertEquals(terrain.getObstacles(), level.getObstacles());
+        assertEquals(terrain.getObstacleCoordinates(), level.getObstacleCoordinates());
         assertEquals(terrain.getSize(), level.getSize());
     }
 

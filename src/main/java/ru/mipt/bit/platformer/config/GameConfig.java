@@ -21,6 +21,12 @@ public class GameConfig {
     private final Interpolation movementInterpolation;
     private final String playerTexturePath;
     private final String tankTexturePath;
+    private final String treeTexturePath;
+    private final String bulletTexturePath;
+    private final int tankHealth;
+    private final int bulletDamage;
+    private final float bulletSpeed;
+    private final int shootKey;
     private final LevelProvider levelProvider;
     private final Map<Direction, int[]> keyBindings;
 
@@ -32,6 +38,12 @@ public class GameConfig {
         this.movementInterpolation = builder.movementInterpolation;
         this.playerTexturePath = builder.playerTexturePath;
         this.tankTexturePath = builder.tankTexturePath;
+        this.treeTexturePath = builder.treeTexturePath;
+        this.bulletTexturePath = builder.bulletTexturePath;
+        this.tankHealth = builder.tankHealth;
+        this.bulletDamage = builder.bulletDamage;
+        this.bulletSpeed = builder.bulletSpeed;
+        this.shootKey = builder.shootKey;
         this.levelProvider = builder.levelProvider;
         this.keyBindings = builder.keyBindings;
     }
@@ -68,6 +80,30 @@ public class GameConfig {
         return tankTexturePath;
     }
 
+    public String getTreeTexturePath() {
+        return treeTexturePath;
+    }
+
+    public String getBulletTexturePath() {
+        return bulletTexturePath;
+    }
+
+    public int getTankHealth() {
+        return tankHealth;
+    }
+
+    public int getBulletDamage() {
+        return bulletDamage;
+    }
+
+    public float getBulletSpeed() {
+        return bulletSpeed;
+    }
+
+    public int getShootKey() {
+        return shootKey;
+    }
+
     public LevelProvider getLevelProvider() {
         return levelProvider;
     }
@@ -85,7 +121,13 @@ public class GameConfig {
         private Interpolation movementInterpolation = Interpolation.smooth;
         private String playerTexturePath = "images/tank_blue.png";
         private String tankTexturePath = "images/tank_blue.png";
-        private LevelProvider levelProvider = new FileLevelProvider("level.txt", "images/greenTree.png");
+        private String treeTexturePath = "images/greenTree.png";
+        private String bulletTexturePath = "images/bullet.png";
+        private int tankHealth = 3;
+        private int bulletDamage = 1;
+        private float bulletSpeed = 0.1f;
+        private int shootKey = Keys.SPACE;
+        private LevelProvider levelProvider = new FileLevelProvider("level.txt");
         private Map<Direction, int[]> keyBindings = defaultKeyBindings();
 
         public Builder levelPath(String levelPath) {
@@ -120,6 +162,36 @@ public class GameConfig {
 
         public Builder tankTexturePath(String tankTexturePath) {
             this.tankTexturePath = tankTexturePath;
+            return this;
+        }
+
+        public Builder treeTexturePath(String treeTexturePath) {
+            this.treeTexturePath = treeTexturePath;
+            return this;
+        }
+
+        public Builder bulletTexturePath(String bulletTexturePath) {
+            this.bulletTexturePath = bulletTexturePath;
+            return this;
+        }
+
+        public Builder tankHealth(int tankHealth) {
+            this.tankHealth = tankHealth;
+            return this;
+        }
+
+        public Builder bulletDamage(int bulletDamage) {
+            this.bulletDamage = bulletDamage;
+            return this;
+        }
+
+        public Builder bulletSpeed(float bulletSpeed) {
+            this.bulletSpeed = bulletSpeed;
+            return this;
+        }
+
+        public Builder shootKey(int shootKey) {
+            this.shootKey = shootKey;
             return this;
         }
 

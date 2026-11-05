@@ -2,44 +2,39 @@ package ru.mipt.bit.platformer.ai;
 
 import com.badlogic.gdx.math.GridPoint2;
 import org.junit.Test;
+import ru.mipt.bit.platformer.model.Command;
 import ru.mipt.bit.platformer.model.Direction;
+import ru.mipt.bit.platformer.model.GameLevel;
+import ru.mipt.bit.platformer.model.MoveCommand;
 import ru.mipt.bit.platformer.model.MovableEntity;
-
-import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
 public class BotTest {
 
     @Test
-    public void updateDrivesTankInDirectionChosenByStrategy() {
-        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), new GridPoint2(10, 8));
-        Bot bot = new Bot(tank, () -> Direction.UP, Collections.emptyList());
+    public void createCommandAsksStrategyForTheTank() {
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
+        Bot bot = new Bot(tank, movingTank -> new MoveCommand(movingTank, Direction.UP));
 
-        bot.update(0.1f, 0.4f);
+        Command command = bot.createCommand();
+        command.execute();
 
         assertEquals(new GridPoint2(1, 2), tank.getDestinationCoordinates());
     }
 
     @Test
-    public void updateAdvancesTankMovement() {
-        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), new GridPoint2(10, 8));
-        Bot bot = new Bot(tank, () -> Direction.UP, Collections.emptyList());
+    public void createCommandExecutedRepeatedlyDrivesTheTank() {
+        GameLevel level = new GameLevel(new GridPoint2(10, 8), 1, 0.1f);
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
+        Bot bot = new Bot(tank, movingTank -> new MoveCommand(movingTank, Direction.RIGHT));
 
-        bot.update(0.4f, 0.4f);
+        bot.createCommand().execute();
+        tank.live(0.4f);
+        bot.createCommand().execute();
+        tank.live(0.4f);
 
-        assertEquals(new GridPoint2(1, 2), tank.getCoordinates());
-        assertEquals(1f, tank.getMovementProgress(), 0f);
-    }
-
-    @Test
-    public void updateDoesNotChangeDestinationWhileMovementIsInProgress() {
-        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), new GridPoint2(10, 8));
-        Bot bot = new Bot(tank, () -> Direction.UP, Collections.emptyList());
-
-        bot.update(0.1f, 0.4f);
-        bot.update(0.1f, 0.4f);
-
-        assertEquals(new GridPoint2(1, 2), tank.getDestinationCoordinates());
+        assertEquals(new GridPoint2(3, 1), tank.getCoordinates());
     }
 }

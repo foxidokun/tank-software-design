@@ -33,9 +33,7 @@ public class RandomTankProvider implements LevelProvider {
             }
         }
         freeCells.remove(level.getPlayerCoordinates());
-        for (ObstacleSpec obstacle : level.getObstacles()) {
-            freeCells.remove(obstacle.getCoordinates());
-        }
+        freeCells.removeAll(level.getObstacleCoordinates());
         freeCells.removeAll(level.getTankCoordinates());
         Collections.shuffle(freeCells, random);
 
@@ -45,6 +43,6 @@ public class RandomTankProvider implements LevelProvider {
             tankCoordinates.add(freeCells.get(i));
         }
 
-        return new Level(level.getPlayerCoordinates(), tankCoordinates, level.getObstacles(), level.getSize());
+        return new Level(level.getPlayerCoordinates(), tankCoordinates, level.getObstacleCoordinates(), level.getSize());
     }
 }

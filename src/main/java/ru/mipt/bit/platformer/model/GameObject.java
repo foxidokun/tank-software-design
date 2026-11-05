@@ -34,4 +34,7 @@ public class GameObject {
     public float getRotation() {
         return 0f;
     }
+
+    public void live(float tick) {
+    }
 }

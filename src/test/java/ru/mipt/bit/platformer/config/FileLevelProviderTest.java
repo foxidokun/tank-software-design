@@ -11,18 +11,16 @@ import static org.junit.Assert.assertTrue;
 
 public class FileLevelProviderTest {
 
-    private final FileLevelProvider provider = new FileLevelProvider("level.txt", "images/greenTree.png");
+    private final FileLevelProvider provider = new FileLevelProvider("level.txt");
 
     @Test
-    public void parsesTreesAndPlayerPosition() {
+    public void parsesObstaclesAndPlayerPosition() {
         Level level = provider.parse(Arrays.asList("T__", "_X_"));
 
         assertEquals(new GridPoint2(1, 0), level.getPlayerCoordinates());
         assertEquals(new GridPoint2(3, 2), level.getSize());
         assertTrue(level.getTankCoordinates().isEmpty());
-        assertEquals(1, level.getObstacles().size());
-        assertEquals(new GridPoint2(0, 1), level.getObstacles().get(0).getCoordinates());
-        assertEquals("images/greenTree.png", level.getObstacles().get(0).getTexturePath());
+        assertEquals(Collections.singletonList(new GridPoint2(0, 1)), level.getObstacleCoordinates());
     }
 
     @Test
@@ -30,7 +28,7 @@ public class FileLevelProviderTest {
         Level level = provider.provide();
 
         assertEquals(new GridPoint2(5, 3), level.getPlayerCoordinates());
-        assertEquals(15, level.getObstacles().size());
+        assertEquals(15, level.getObstacleCoordinates().size());
     }
 
     @Test(expected = IllegalArgumentException.class)
