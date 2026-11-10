@@ -10,6 +10,7 @@ public class MovableEntity extends GameObject {
     private final GameLevel level;
     private final GridPoint2 destinationCoordinates;
     private final float speed;
+    private final int maxHealth;
     private int health;
     private Direction direction = Direction.RIGHT;
     private float movementProgress = 1f;
@@ -19,6 +20,7 @@ public class MovableEntity extends GameObject {
         this.level = level;
         this.speed = speed;
         this.health = health;
+        this.maxHealth = health;
         this.destinationCoordinates = new GridPoint2(coordinates);
     }
 
@@ -67,6 +69,10 @@ public class MovableEntity extends GameObject {
 
     public int getHealth() {
         return health;
+    }
+
+    public float getHealthFraction() {
+        return (float) health / maxHealth;
     }
 
     @Override

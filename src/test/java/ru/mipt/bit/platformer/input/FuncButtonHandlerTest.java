@@ -21,9 +21,8 @@ public class FuncButtonHandlerTest {
     private final MovableEntity player = new MovableEntity(new GridPoint2(1, 1), level, 0.4f, 3);
 
     @Test
-    public void pressedKeyCreatesMoveCommandOfTheBoundFactory() {
-        KeyStateProvider pressedKeys = keyCode -> keyCode == Keys.W;
-        FuncButtonHandler handler = new FuncButtonHandler(player, pressedKeys, tank -> new MoveCommand(tank, Direction.UP), Keys.UP, Keys.W);
+    public void heldKeyCreatesMoveCommandOfTheBoundFactory() {
+        FuncButtonHandler handler = FuncButtonHandler.whileHeld(held(Keys.W), () -> new MoveCommand(player, Direction.UP), Keys.UP, Keys.W);
 
         List<Command> commands = handler.createCommands();
 
@@ -34,9 +33,8 @@ public class FuncButtonHandlerTest {
     }
 
     @Test
-    public void pressedKeyCreatesShootCommandOfTheBoundFactory() {
-        KeyStateProvider pressedKeys = keyCode -> keyCode == Keys.SPACE;
-        FuncButtonHandler handler = new FuncButtonHandler(player, pressedKeys, ShootCommand::new, Keys.SPACE);
+    public void heldKeyCreatesShootCommandOfTheBoundFactory() {
+        FuncButtonHandler handler = FuncButtonHandler.whileHeld(held(Keys.SPACE), () -> new ShootCommand(player), Keys.SPACE);
 
         List<Command> commands = handler.createCommands();
 
@@ -47,10 +45,54 @@ public class FuncButtonHandlerTest {
     }
 
     @Test
-    public void noPressedKeyCreatesNoCommands() {
-        KeyStateProvider pressedKeys = keyCode -> false;
-        FuncButtonHandler handler = new FuncButtonHandler(player, pressedKeys, tank -> new MoveCommand(tank, Direction.LEFT), Keys.LEFT, Keys.A);
+    public void justPressedKeyCreatesCommandOfTheBoundFactory() {
+        FuncButtonHandler handler = FuncButtonHandler.onPressed(pressed(Keys.L), () -> new ShootCommand(player), Keys.L);
+
+        List<Command> commands = handler.createCommands();
+
+        assertEquals(1, commands.size());
+        assertTrue(commands.get(0) instanceof ShootCommand);
+    }
+
+    @Test
+    public void heldKeyDoesNotCreateJustPressedCommand() {
+        FuncButtonHandler handler = FuncButtonHandler.onPressed(held(Keys.L), () -> new ShootCommand(player), Keys.L);
 
         assertTrue(handler.createCommands().isEmpty());
+    }
+
+    @Test
+    public void noPressedKeyCreatesNoCommands() {
+        FuncButtonHandler handler = FuncButtonHandler.whileHeld(held(Keys.ESCAPE), () -> new MoveCommand(player, Direction.LEFT), Keys.LEFT, Keys.A);
+
+        assertTrue(handler.createCommands().isEmpty());
+    }
+
+    private static KeyStateProvider held(int keyCode) {
+        return new KeyStateProvider() {
+            @Override
+            public boolean isKeyPressed(int code) {
+                return code == keyCode;
+            }
+
+            @Override
+            public boolean isKeyJustPressed(int code) {
+                return false;
+            }
+        };
+    }
+
+    private static KeyStateProvider pressed(int keyCode) {
+        return new KeyStateProvider() {
+            @Override
+            public boolean isKeyPressed(int code) {
+                return false;
+            }
+
+            @Override
+            public boolean isKeyJustPressed(int code) {
+                return code == keyCode;
+            }
+        };
     }
 }

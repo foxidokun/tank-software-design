@@ -178,6 +178,17 @@ public class MovableEntityTest {
     }
 
     @Test
+    public void healthFractionFallsWithTakenDamage() {
+        level.add(player);
+
+        assertEquals(1f, player.getHealthFraction(), 0f);
+
+        player.hit(1);
+
+        assertEquals(2f / 3f, player.getHealthFraction(), 0.0001f);
+    }
+
+    @Test
     public void deadTankIgnoresMoveAndShoot() {
         level.add(player);
         player.hit(HEALTH);

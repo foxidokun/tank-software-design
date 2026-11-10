@@ -1,31 +1,37 @@
 package ru.mipt.bit.platformer.input;
 
 import ru.mipt.bit.platformer.model.Command;
-import ru.mipt.bit.platformer.model.MovableEntity;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.IntPredicate;
+import java.util.function.Supplier;
 
 public class FuncButtonHandler implements ButtonHandler {
 
-    private final MovableEntity tank;
-    private final KeyStateProvider keyState;
-    private final Function<MovableEntity, Command> commandFactory;
+    private final IntPredicate keyDown;
+    private final Supplier<Command> commandFactory;
     private final int[] keyCodes;
 
-    public FuncButtonHandler(MovableEntity tank, KeyStateProvider keyState, Function<MovableEntity, Command> commandFactory, int... keyCodes) {
-        this.tank = tank;
-        this.keyState = keyState;
+    private FuncButtonHandler(IntPredicate keyDown, Supplier<Command> commandFactory, int... keyCodes) {
+        this.keyDown = keyDown;
         this.commandFactory = commandFactory;
         this.keyCodes = keyCodes;
+    }
+
+    public static FuncButtonHandler whileHeld(KeyStateProvider keyState, Supplier<Command> commandFactory, int... keyCodes) {
+        return new FuncButtonHandler(keyState::isKeyPressed, commandFactory, keyCodes);
+    }
+
+    public static FuncButtonHandler onPressed(KeyStateProvider keyState, Supplier<Command> commandFactory, int... keyCodes) {
+        return new FuncButtonHandler(keyState::isKeyJustPressed, commandFactory, keyCodes);
     }
 
     @Override
     public List<Command> createCommands() {
         for (int keyCode : keyCodes) {
-            if (keyState.isKeyPressed(keyCode)) {
-                return Collections.singletonList(commandFactory.apply(tank));
+            if (keyDown.test(keyCode)) {
+                return Collections.singletonList(commandFactory.get());
             }
         }
         return Collections.emptyList();
