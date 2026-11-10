@@ -43,19 +43,13 @@ public class MovableEntity extends GameObject {
             return;
         }
         GridPoint2 spawnCell = direction.move(coordinates);
-        if (!level.isInside(spawnCell)) {
+        if (!level.isInside(spawnCell) || level.hitAt(spawnCell)) {
             return;
         }
-        GameObject target = level.objectAt(spawnCell);
-        if (target instanceof MovableEntity) {
-            ((MovableEntity) target).hit(level.getBulletDamage());
-            return;
-        }
-        if (target == null) {
-            level.add(new Bullet(spawnCell, direction, level, level.getBulletDamage(), level.getBulletSpeed()));
-        }
+        level.add(new Bullet(spawnCell, direction, level, level.getBulletSpeed()));
     }
 
+    @Override
     public void hit(int damage) {
         health -= damage;
         if (health <= 0) {

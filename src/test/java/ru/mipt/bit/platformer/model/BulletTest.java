@@ -15,7 +15,7 @@ public class BulletTest {
 
     @Test
     public void fliesInItsDirectionCellByCell() {
-        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, level, DAMAGE, SPEED);
+        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, level, SPEED);
         level.add(bullet);
 
         bullet.live(SPEED);
@@ -28,7 +28,7 @@ public class BulletTest {
     @Test
     public void disappearsWhenTryingToLeaveTheLevel() {
         GameLevel narrowLevel = new GameLevel(new GridPoint2(2, 8), DAMAGE, SPEED);
-        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, narrowLevel, DAMAGE, SPEED);
+        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, narrowLevel, SPEED);
         narrowLevel.add(bullet);
 
         bullet.live(SPEED);
@@ -40,7 +40,7 @@ public class BulletTest {
     public void explodesOnObstacleWithoutDamagingIt() {
         GameObject tree = new GameObject(new GridPoint2(3, 1));
         level.add(tree);
-        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, level, DAMAGE, SPEED);
+        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, level, SPEED);
         level.add(bullet);
 
         bullet.live(SPEED);
@@ -54,7 +54,7 @@ public class BulletTest {
     public void damagesTankItExplodesOn() {
         MovableEntity tank = new MovableEntity(new GridPoint2(3, 1), level, 0.4f, 3);
         level.add(tank);
-        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, level, DAMAGE, SPEED);
+        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, level, SPEED);
         level.add(bullet);
 
         bullet.live(SPEED);
@@ -69,7 +69,7 @@ public class BulletTest {
     public void killsTankWhenDamageExceedsItsHealth() {
         MovableEntity tank = new MovableEntity(new GridPoint2(3, 1), level, 0.4f, 1);
         level.add(tank);
-        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, level, DAMAGE, SPEED);
+        Bullet bullet = new Bullet(new GridPoint2(1, 1), Direction.RIGHT, level, SPEED);
         level.add(bullet);
 
         bullet.live(SPEED);
