@@ -16,17 +16,23 @@ public class LevelRenderer implements LevelListener {
     private final GameConfig config;
     private final GameObject player;
     private final TileMovement tileMovement;
-    private final Map<GameObject, EntityRenderer> renderers = new LinkedHashMap<>();
+    private final HealthBarDisplay healthBarDisplay;
+    private final Map<GameObject, ObjectRenderer> renderers = new LinkedHashMap<>();
 
-    public LevelRenderer(GameConfig config, GameObject player, TileMovement tileMovement) {
+    public LevelRenderer(GameConfig config, GameObject player, TileMovement tileMovement, HealthBarDisplay healthBarDisplay) {
         this.config = config;
         this.player = player;
         this.tileMovement = tileMovement;
+        this.healthBarDisplay = healthBarDisplay;
     }
 
     @Override
     public void objectAdded(GameObject object) {
-        renderers.put(object, new EntityRenderer(texturePath(object), object, tileMovement));
+        ObjectRenderer renderer = new EntityRenderer(texturePath(object), object, tileMovement);
+        if (object instanceof MovableEntity) {
+            renderer = new HealthBarRenderer(renderer, (MovableEntity) object, tileMovement, healthBarDisplay);
+        }
+        renderers.put(object, renderer);
     }
 
     @Override
@@ -35,13 +41,13 @@ public class LevelRenderer implements LevelListener {
     }
 
     public void render(Batch batch) {
-        for (EntityRenderer renderer : renderers.values()) {
+        for (ObjectRenderer renderer : renderers.values()) {
             renderer.render(batch);
         }
     }
 
     public void dispose() {
-        for (EntityRenderer renderer : renderers.values()) {
+        for (ObjectRenderer renderer : renderers.values()) {
             renderer.dispose();
         }
     }

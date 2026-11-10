@@ -10,7 +10,7 @@ import ru.mipt.bit.platformer.util.TileMovement;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.drawTextureRegionUnscaled;
 
-public class EntityRenderer {
+public class EntityRenderer implements ObjectRenderer {
 
     private final Texture texture;
     private final TextureRegion region;
@@ -26,11 +26,13 @@ public class EntityRenderer {
         this.tileMovement = tileMovement;
     }
 
+    @Override
     public void render(Batch batch) {
         tileMovement.moveRectangleBetweenTileCenters(rectangle, entity.getCoordinates(), entity.getDestinationCoordinates(), entity.getMovementProgress());
         drawTextureRegionUnscaled(batch, region, rectangle, entity.getRotation());
     }
 
+    @Override
     public void dispose() {
         texture.dispose();
     }

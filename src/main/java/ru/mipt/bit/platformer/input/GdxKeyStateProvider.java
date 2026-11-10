@@ -11,4 +11,9 @@ public class GdxKeyStateProvider implements KeyStateProvider {
     public boolean isKeyPressed(int keyCode) {
         return Gdx.input.isKeyPressed(keyCode);
     }
+
+    @Override
+    public boolean isKeyJustPressed(int keyCode) {
+        return Gdx.input.isKeyJustPressed(keyCode);
+    }
 }

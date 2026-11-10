@@ -9,16 +9,14 @@ public class Bullet extends GameObject {
 
     private final GameLevel level;
     private final Direction direction;
-    private final int damage;
     private final float speed;
     private final GridPoint2 destinationCoordinates;
     private float movementProgress = 1f;
 
-    public Bullet(GridPoint2 coordinates, Direction direction, GameLevel level, int damage, float speed) {
+    public Bullet(GridPoint2 coordinates, Direction direction, GameLevel level, float speed) {
         super(coordinates);
         this.direction = direction;
         this.level = level;
-        this.damage = damage;
         this.speed = speed;
         this.destinationCoordinates = new GridPoint2(coordinates);
     }
@@ -32,26 +30,19 @@ public class Bullet extends GameObject {
         }
     }
 
+    @Override
+    public void hit(int damage) {
+        level.remove(this);
+    }
+
     private void flyNext() {
         GridPoint2 next = direction.move(coordinates);
-        if (!level.isInside(next)) {
+        if (!level.isInside(next) || level.hitAt(next)) {
             level.remove(this);
-            return;
-        }
-        GameObject target = level.objectAt(next);
-        if (target != null) {
-            explode(target);
             return;
         }
         destinationCoordinates.set(next);
         movementProgress = 0f;
-    }
-
-    private void explode(GameObject target) {
-        if (target instanceof MovableEntity) {
-            ((MovableEntity) target).hit(damage);
-        }
-        level.remove(this);
     }
 
     @Override

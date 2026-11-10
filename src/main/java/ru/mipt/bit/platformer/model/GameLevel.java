@@ -19,10 +19,6 @@ public class GameLevel {
         this.bulletSpeed = bulletSpeed;
     }
 
-    public int getBulletDamage() {
-        return bulletDamage;
-    }
-
     public float getBulletSpeed() {
         return bulletSpeed;
     }
@@ -48,12 +44,14 @@ public class GameLevel {
 
     public void live(float tick) {
         for (GameObject object : new ArrayList<>(objects)) {
-            object.live(tick);
+            if (objects.contains(object)) {
+                object.live(tick);
+            }
         }
     }
 
     public List<GameObject> getObjects() {
-        return objects;
+        return new ArrayList<>(objects);
     }
 
     public GameObject objectAt(GridPoint2 cell) {
@@ -63,6 +61,15 @@ public class GameLevel {
             }
         }
         return null;
+    }
+
+    public boolean hitAt(GridPoint2 cell) {
+        GameObject target = objectAt(cell);
+        if (target == null) {
+            return false;
+        }
+        target.hit(bulletDamage);
+        return true;
     }
 
     public boolean isInside(GridPoint2 cell) {

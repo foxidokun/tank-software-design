@@ -10,6 +10,7 @@ public class MovableEntity extends GameObject {
     private final GameLevel level;
     private final GridPoint2 destinationCoordinates;
     private final float speed;
+    private final int maxHealth;
     private int health;
     private Direction direction = Direction.RIGHT;
     private float movementProgress = 1f;
@@ -19,6 +20,7 @@ public class MovableEntity extends GameObject {
         this.level = level;
         this.speed = speed;
         this.health = health;
+        this.maxHealth = health;
         this.destinationCoordinates = new GridPoint2(coordinates);
     }
 
@@ -41,19 +43,13 @@ public class MovableEntity extends GameObject {
             return;
         }
         GridPoint2 spawnCell = direction.move(coordinates);
-        if (!level.isInside(spawnCell)) {
+        if (!level.isInside(spawnCell) || level.hitAt(spawnCell)) {
             return;
         }
-        GameObject target = level.objectAt(spawnCell);
-        if (target instanceof MovableEntity) {
-            ((MovableEntity) target).hit(level.getBulletDamage());
-            return;
-        }
-        if (target == null) {
-            level.add(new Bullet(spawnCell, direction, level, level.getBulletDamage(), level.getBulletSpeed()));
-        }
+        level.add(new Bullet(spawnCell, direction, level, level.getBulletSpeed()));
     }
 
+    @Override
     public void hit(int damage) {
         health -= damage;
         if (health <= 0) {
@@ -67,6 +63,10 @@ public class MovableEntity extends GameObject {
 
     public int getHealth() {
         return health;
+    }
+
+    public float getHealthFraction() {
+        return (float) health / maxHealth;
     }
 
     @Override

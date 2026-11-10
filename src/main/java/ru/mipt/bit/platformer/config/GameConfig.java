@@ -27,6 +27,7 @@ public class GameConfig {
     private final int bulletDamage;
     private final float bulletSpeed;
     private final int shootKey;
+    private final int toggleHealthBarsKey;
     private final LevelProvider levelProvider;
     private final Map<Direction, int[]> keyBindings;
 
@@ -44,6 +45,7 @@ public class GameConfig {
         this.bulletDamage = builder.bulletDamage;
         this.bulletSpeed = builder.bulletSpeed;
         this.shootKey = builder.shootKey;
+        this.toggleHealthBarsKey = builder.toggleHealthBarsKey;
         this.levelProvider = builder.levelProvider;
         this.keyBindings = builder.keyBindings;
     }
@@ -104,6 +106,10 @@ public class GameConfig {
         return shootKey;
     }
 
+    public int getToggleHealthBarsKey() {
+        return toggleHealthBarsKey;
+    }
+
     public LevelProvider getLevelProvider() {
         return levelProvider;
     }
@@ -123,10 +129,11 @@ public class GameConfig {
         private String tankTexturePath = "images/tank_blue.png";
         private String treeTexturePath = "images/greenTree.png";
         private String bulletTexturePath = "images/bullet.png";
-        private int tankHealth = 3;
-        private int bulletDamage = 1;
+        private int tankHealth = 100;
+        private int bulletDamage = 25;
         private float bulletSpeed = 0.1f;
         private int shootKey = Keys.SPACE;
+        private int toggleHealthBarsKey = Keys.L;
         private LevelProvider levelProvider = new FileLevelProvider("level.txt");
         private Map<Direction, int[]> keyBindings = defaultKeyBindings();
 
@@ -192,6 +199,11 @@ public class GameConfig {
 
         public Builder shootKey(int shootKey) {
             this.shootKey = shootKey;
+            return this;
+        }
+
+        public Builder toggleHealthBarsKey(int toggleHealthBarsKey) {
+            this.toggleHealthBarsKey = toggleHealthBarsKey;
             return this;
         }
 

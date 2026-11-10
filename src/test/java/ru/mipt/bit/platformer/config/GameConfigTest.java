@@ -34,6 +34,7 @@ public class GameConfigTest {
                 .bulletDamage(2)
                 .bulletSpeed(0.2f)
                 .shootKey(Keys.SPACE)
+                .toggleHealthBarsKey(Keys.H)
                 .levelProvider(provider)
                 .keyBindings(bindings)
                 .build();
@@ -51,8 +52,16 @@ public class GameConfigTest {
         assertEquals(2, config.getBulletDamage());
         assertEquals(0.2f, config.getBulletSpeed(), 0f);
         assertEquals(Keys.SPACE, config.getShootKey());
+        assertEquals(Keys.H, config.getToggleHealthBarsKey());
         assertSame(provider, config.getLevelProvider());
         assertSame(bindings, config.getKeyBindings());
+    }
+
+    @Test
+    public void builderDefaultsToHundredTankHealth() {
+        GameConfig config = GameConfig.builder().build();
+
+        assertEquals(100, config.getTankHealth());
     }
 
     @Test

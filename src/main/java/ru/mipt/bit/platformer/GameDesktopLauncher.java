@@ -20,7 +20,9 @@ import ru.mipt.bit.platformer.config.Level;
 import ru.mipt.bit.platformer.config.LevelProvider;
 import ru.mipt.bit.platformer.config.RandomLevelProvider;
 import ru.mipt.bit.platformer.config.RandomTankProvider;
+import ru.mipt.bit.platformer.graphics.HealthBarDisplay;
 import ru.mipt.bit.platformer.graphics.LevelRenderer;
+import ru.mipt.bit.platformer.graphics.ToggleHealthBarsCommand;
 import ru.mipt.bit.platformer.input.FuncButtonHandler;
 import ru.mipt.bit.platformer.input.GdxKeyStateProvider;
 import ru.mipt.bit.platformer.input.InputHandler;
@@ -80,8 +82,9 @@ public class GameDesktopLauncher implements ApplicationListener {
         Level level = new RandomTankProvider(config.getLevelProvider(), 5).provide();
 
         gameLevel = new GameLevel(level.getSize(), config.getBulletDamage(), config.getBulletSpeed());
+        HealthBarDisplay healthBarDisplay = new HealthBarDisplay();
         player = new MovableEntity(level.getPlayerCoordinates(), gameLevel, config.getMovementSpeed(), config.getTankHealth());
-        levelRenderer = new LevelRenderer(config, player, tileMovement);
+        levelRenderer = new LevelRenderer(config, player, tileMovement, healthBarDisplay);
         gameLevel.addListener(levelRenderer);
 
         gameLevel.add(player);
@@ -101,9 +104,10 @@ public class GameDesktopLauncher implements ApplicationListener {
         inputHandler = new InputHandler();
         for (Map.Entry<Direction, int[]> binding : config.getKeyBindings().entrySet()) {
             Direction direction = binding.getKey();
-            inputHandler.add(new FuncButtonHandler(player, keyState, tank -> new MoveCommand(tank, direction), binding.getValue()));
+            inputHandler.add(FuncButtonHandler.whileHeld(keyState, () -> new MoveCommand(player, direction), binding.getValue()));
         }
-        inputHandler.add(new FuncButtonHandler(player, keyState, ShootCommand::new, config.getShootKey()));
+        inputHandler.add(FuncButtonHandler.whileHeld(keyState, () -> new ShootCommand(player), config.getShootKey()));
+        inputHandler.add(FuncButtonHandler.onPressed(keyState, () -> new ToggleHealthBarsCommand(healthBarDisplay), config.getToggleHealthBarsKey()));
     }
 
     @Override

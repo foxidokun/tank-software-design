@@ -35,6 +35,9 @@ public class GameObject {
         return 0f;
     }
 
+    public void hit(int damage) {
+    }
+
     public void live(float tick) {
     }
 }
