@@ -199,4 +199,65 @@ public class MovableEntityTest {
         assertEquals(new GridPoint2(1, 1), player.getDestinationCoordinates());
         assertTrue(level.getObjects().isEmpty());
     }
+
+    @Test
+    public void lightConditionKeepsNormalMovement() {
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, SPEED, 100);
+        level.add(tank);
+        tank.hit(10);
+
+        tank.tryMove(Direction.RIGHT);
+        tank.live(SPEED);
+
+        assertEquals(new GridPoint2(2, 1), tank.getCoordinates());
+    }
+
+    @Test
+    public void mediumConditionDoublesMovementDuration() {
+        level.add(player);
+        player.hit(1);
+
+        player.tryMove(Direction.RIGHT);
+        player.live(SPEED);
+
+        assertEquals(0.5f, player.getMovementProgress(), 0.0001f);
+        assertEquals(new GridPoint2(1, 1), player.getCoordinates());
+
+        player.live(SPEED);
+
+        assertEquals(new GridPoint2(2, 1), player.getCoordinates());
+    }
+
+    @Test
+    public void mediumConditionStillAllowsShooting() {
+        level.add(player);
+        player.hit(1);
+
+        player.shoot();
+
+        assertEquals(2, level.getObjects().size());
+    }
+
+    @Test
+    public void heavyConditionTriplesMovementDuration() {
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, SPEED, 100);
+        level.add(tank);
+        tank.hit(90);
+
+        tank.tryMove(Direction.RIGHT);
+        tank.live(SPEED);
+
+        assertEquals(1f / 3f, tank.getMovementProgress(), 0.0001f);
+        assertEquals(new GridPoint2(1, 1), tank.getCoordinates());
+    }
+
+    @Test
+    public void heavyConditionPreventsShooting() {
+        MovableEntity tank = new MovableEntity(new GridPoint2(1, 1), level, SPEED, 100);
+        tank.hit(90);
+
+        tank.shoot();
+
+        assertTrue(level.getObjects().isEmpty());
+    }
 }

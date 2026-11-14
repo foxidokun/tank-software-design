@@ -14,6 +14,7 @@ public class MovableEntity extends GameObject {
     private int health;
     private Direction direction = Direction.RIGHT;
     private float movementProgress = 1f;
+    private TankState state = TankCondition.LIGHT;
 
     public MovableEntity(GridPoint2 coordinates, GameLevel level, float speed, int health) {
         super(coordinates);
@@ -39,7 +40,7 @@ public class MovableEntity extends GameObject {
     }
 
     public void shoot() {
-        if (isDead() || !isEqual(movementProgress, 1f)) {
+        if (isDead() || !state.canShoot() || !isEqual(movementProgress, 1f)) {
             return;
         }
         GridPoint2 spawnCell = direction.move(coordinates);
@@ -54,7 +55,9 @@ public class MovableEntity extends GameObject {
         health -= damage;
         if (health <= 0) {
             level.remove(this);
+            return;
         }
+        state = TankCondition.forHealthFraction(getHealthFraction());
     }
 
     public boolean isDead() {
@@ -71,7 +74,8 @@ public class MovableEntity extends GameObject {
 
     @Override
     public void live(float tick) {
-        movementProgress = continueProgress(movementProgress, tick, speed);
+        float speedAdj = speed * state.movementDurationMultiplier();
+        movementProgress = continueProgress(movementProgress, tick, speedAdj);
         if (isEqual(movementProgress, 1f)) {
             coordinates.set(destinationCoordinates);
         }
