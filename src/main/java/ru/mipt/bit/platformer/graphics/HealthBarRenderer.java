@@ -45,14 +45,18 @@ public class HealthBarRenderer implements ObjectRenderer {
     }
 
     private void drawHealthBar(Batch batch) {
-        tileMovement.moveRectangleBetweenTileCenters(bounds, tank.getCoordinates(), tank.getDestinationCoordinates(), tank.getMovementProgress());
-        float x = bounds.x;
-        float y = bounds.y + BAR_OFFSET_Y;
-        batch.setColor(LOST_HEALTH_COLOR);
-        batch.draw(barTexture, x, y, BAR_WIDTH, BAR_HEIGHT);
-        batch.setColor(REMAINING_HEALTH_COLOR);
-        batch.draw(barTexture, x, y, BAR_WIDTH * tank.getHealthFraction(), BAR_HEIGHT);
-        batch.setColor(Color.WHITE);
+        float originalColor = batch.getPackedColor();
+        try {
+            tileMovement.moveRectangleBetweenTileCenters(bounds, tank.getCoordinates(), tank.getDestinationCoordinates(), tank.getMovementProgress());
+            float x = bounds.x;
+            float y = bounds.y + BAR_OFFSET_Y;
+            batch.setColor(LOST_HEALTH_COLOR);
+            batch.draw(barTexture, x, y, BAR_WIDTH, BAR_HEIGHT);
+            batch.setColor(REMAINING_HEALTH_COLOR);
+            batch.draw(barTexture, x, y, BAR_WIDTH * tank.getHealthFraction(), BAR_HEIGHT);
+        } finally {
+            batch.setPackedColor(originalColor);
+        }
     }
 
     private static Texture createWhiteTexture() {
